@@ -1,28 +1,19 @@
-package db
+package postgres
 
 import (
+	"CRM/go/authService/internal/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "0000"
-	dbname   = "crm"
-)
-
 func Connect() (*sql.DB, error) {
-	connectionString := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	cfg := config.GetConfig()
+	connectionString := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable", cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 	err = db.Ping()
 	if err != nil {
 		return nil, err
