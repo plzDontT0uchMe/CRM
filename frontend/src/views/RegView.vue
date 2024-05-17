@@ -11,7 +11,7 @@ const password = ref('')
 
 const reg = async () => {
     try {
-        const resp = await axios.post('http://127.0.0.1:3000/api/reg', {
+        const resp = await axios.post('/api/reg', {
             login: login.value,
             password: password.value
         })

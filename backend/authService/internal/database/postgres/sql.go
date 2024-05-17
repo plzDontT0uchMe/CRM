@@ -15,12 +15,12 @@ func GetUser(user *model.User) (error, int) {
 	}
 	defer db.Close()
 
-	row := db.QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2", user.Login, user.Password)
+	row := db.QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password)
 
 	err = row.Scan(&user.Id)
 	if err != nil {
 		fmt.Println("error binding JSON for user: ", err)
-		return err, http.StatusOK
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK

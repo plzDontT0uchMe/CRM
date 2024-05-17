@@ -19,6 +19,8 @@ func main() {
 	}
 	config.SetConfig(&cfg)
 
+	fmt.Println(cfg)
+
 	r := gin.Default()
 
 	r.Use(cors.CORSMiddleware())

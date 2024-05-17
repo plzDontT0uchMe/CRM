@@ -126,7 +126,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 COPY public.sessions (id, id_user, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) FROM stdin;
 10	35	6552ecca9c8742e9ad2e7594ca67d87ff940fd92c56c5bc6114754346054aa75	2024-05-12 17:23:00	b1f288e7f995761c3aa92ed3392793d80c1e42797b365d7c0d87d93ddc87a7db	2024-05-12 17:28:31.199679
 11	36	fbe2e4c47850e22ef829a42e4ba4032223ea357c8d31f9f20cbb698ebc45927f	2024-05-12 17:25:00	eeab146e682673376cf86015ed07cd310fe7751b781e58585581a0d92083df04	2024-05-12 17:30:33.130748
-50	18	e764f575c80e4b6b92c5c2f133b601b98bfab2f73cf4ee043dd18472f9e937ff	2024-05-12 23:17:51.66655	69c8aa59445518dfb19a805c2ff810fb3bd46368f03eccd485f99424073f5e67	2024-05-12 23:19:22.462235
+56	18	3c09e1d11a4ae8a61b22f0b01319fb301db19dcd294872af8fe19be329e87d81	2024-05-14 18:20:28.74511	26f0d1c18ae2267e6aefe95bed359ce80d9bdc46343afe474153208ce57dde0d	2024-05-14 18:24:28.74511
 \.
 
 
@@ -156,6 +156,7 @@ COPY public.users (id, login, password, name, surname, patronymic, role) FROM st
 40	12377	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	\N	\N	\N	0
 42	123778	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	\N	\N	\N	0
 43	333	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	\N	\N	\N	0
+44	444	6b120b0eeb129d31c0fb2a64828331c664394c8d89c6287ebb5e131294e19b85	\N	\N	\N	0
 \.
 
 
@@ -163,14 +164,14 @@ COPY public.users (id, login, password, name, surname, patronymic, role) FROM st
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 50, true);
+SELECT pg_catalog.setval('public.sessions_id_seq', 56, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 43, true);
+SELECT pg_catalog.setval('public.users_id_seq', 44, true);
 
 
 --

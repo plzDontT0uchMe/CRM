@@ -11,38 +11,56 @@ const password = ref('')
 
 const auth = async () => {
     try {
-        const resp = await axios.post('http://127.0.0.1:3000/api/auth', {
+        const { data } = await axios.post('/api/auth', {
             login: login.value,
             password: password.value
         })
-        if (resp.data.successfully) {
-            cookies.set('access_token', resp.data.session.access_token)
-            cookies.set('refresh_token', resp.data.session.refresh_token)
+        console.log('OK')
+        console.log(data)
+        if (data.successfully) {
+            cookies.set('access_token', data.session.access_token)
+            cookies.set('refresh_token', data.session.refresh_token)
             router.push({ name: 'main' })
         }
     } catch (error) {
-        console.error(error)
+        console.log('123')
+    }
+}
+
+const getCourse = async () => {
+    try {
+        const resp = await axios.post('/api/getList')
+        console.log(resp.data)
+    }
+    catch (err) {
+        console.log(err)
     }
 }
 
 const checkAuth = async () => {
     try {
-        const resp = await axios.post('http://127.0.0.1:3000/api/checkAuth', {
+        const resp = await axios.post('/api/checkAuth', {
             access_token: cookies.get('access_token'),
         })
         console.log(resp.data)
         if (resp.data.successfully) {
             if (resp.data.flag == 'getRefreshToken') {
-                const resp1 = await axios.post('http://127.0.0.1:3000/api/checkAuth', {
-                    refresh_token: cookies.get('refresh_token'),
-                })
-                console.log(resp1.data)
-                if(resp1.data.flag == 'newAccessToken') {
-                    cookies.set('access_token', resp1.data.message)
-                    router.push({ name: 'main' })
+                try {
+                    const resp1 = await axios.post('/api/checkAuth', {
+                        refresh_token: cookies.get('refresh_token'),
+                    })
+                    console.log(resp1.data)
+                    console.log('OK')
+                    if(resp1.data.flag == 'newAccessToken') {
+                        cookies.set('access_token', resp1.data.message)
+                        router.push({ name: 'main' })
+                    }
+                    if (resp1.data.flag == 'authorizationFailed') {
+                        console.log('Ошибка авторизации!')
+                    }
                 }
-                if (resp1.data.flag == 'authorizationFailed') {
-                    console.log('Ошибка авторизации!')
+                catch (error) {
+                    console.log('321')
                 }
             }
             if(resp.data.flag != 'getRefreshToken') {
@@ -50,11 +68,17 @@ const checkAuth = async () => {
             }
         }
     } catch (error) {
-        console.error(error)
+        console.log('123')
     }
 }
 
+const checkAuthTest = async () => {
+    const resp = await axios.get('/hello')
+    console.log(resp.data)
+}
+
 onMounted(() => {
+    checkAuthTest()
     //checkAuth()
 })
 
