@@ -73,12 +73,15 @@ const checkAuth = async () => {
 }
 
 const checkAuthTest = async () => {
-    const resp = await axios.get('/hello')
+    const resp = await axios.post('/api/auth', {
+        login: login.value,
+        password: password.value
+    })
     console.log(resp.data)
 }
 
 onMounted(() => {
-    checkAuthTest()
+    //checkAuthTest()
     //checkAuth()
 })
 
@@ -117,7 +120,7 @@ onMounted(() => {
                 <input type="text" class="grow" placeholder="password" v-model="password" />
             </label>
         </label>
-        <button class="btn btn-outline" @click="auth">Submit</button>
+        <button class="btn btn-outline" @click="checkAuthTest">Submit</button>
     </div>
 </template>
 
