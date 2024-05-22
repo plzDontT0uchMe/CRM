@@ -1,10 +1,7 @@
 <script setup>
 import axios from '@/axios/index.js'
-import { onMounted, ref } from 'vue'
-import { useCookies } from "vue3-cookies";
 import router from '@/router/index.js'
-
-const { cookies } = useCookies();
+import { onMounted, ref } from 'vue'
 
 const login = ref('')
 const password = ref('')
