@@ -16,17 +16,17 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE IF EXISTS crm;
+DROP DATABASE IF EXISTS "crm-authService";
 --
--- Name: crm; Type: DATABASE; Schema: -; Owner: postgres
+-- Name: crm-authService; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE crm WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Russian_Russia.1251';
+CREATE DATABASE "crm-authService" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Russian_Russia.1251';
 
 
-ALTER DATABASE crm OWNER TO postgres;
+ALTER DATABASE "crm-authService" OWNER TO postgres;
 
-\connect crm
+\connect -reuse-previous=on "dbname='crm-authService'"
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -124,9 +124,11 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.sessions (id, id_user, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) FROM stdin;
+81	45	c78e4006aee923d287bc9180a319cd1f60d5e66578ec96da2c742b69814e709b	2024-05-19 10:39:37.063949	7c8150fe96c96b4365950ff7f14411bbbd677a8724c0eeed2cd592637bb7c528	2024-05-19 10:43:37.063949
 10	35	6552ecca9c8742e9ad2e7594ca67d87ff940fd92c56c5bc6114754346054aa75	2024-05-12 17:23:00	b1f288e7f995761c3aa92ed3392793d80c1e42797b365d7c0d87d93ddc87a7db	2024-05-12 17:28:31.199679
-11	36	fbe2e4c47850e22ef829a42e4ba4032223ea357c8d31f9f20cbb698ebc45927f	2024-05-12 17:25:00	eeab146e682673376cf86015ed07cd310fe7751b781e58585581a0d92083df04	2024-05-12 17:30:33.130748
-56	18	3c09e1d11a4ae8a61b22f0b01319fb301db19dcd294872af8fe19be329e87d81	2024-05-14 18:20:28.74511	26f0d1c18ae2267e6aefe95bed359ce80d9bdc46343afe474153208ce57dde0d	2024-05-14 18:24:28.74511
+199	18	63e73e328d37d2f831054fda6c3b5c15931e25024065f7a33d0fe330273360d5	2024-05-22 13:24:44.647721	7213ef3022bba7a3483f07eb059b7ced2eb3ab60f416e4f74f3bf1161d8aba5d	2024-05-22 13:28:44.647721
+71	21	cc07c67b1463206aac209f7796c85e8b744c61d1975881f28c42b5545ebe224f	2024-05-18 20:47:41.301229	d654eac2e31d4124da52021b8d3f534e9e83c530b0ed345f3cb9481a8ed8a9cb	2024-05-18 20:51:41.301229
+74	27	89ddb46ab1d11f66bee0cdd01d1fce82760f9f2891beaefc2c525acb21dc5d6f	2024-05-18 20:49:27.81892	95de7045ca5342c2dab8a8f2a56c8c92b3f5a8b847278528d422b626ff8e67eb	2024-05-18 20:53:27.81892
 \.
 
 
@@ -157,6 +159,8 @@ COPY public.users (id, login, password, name, surname, patronymic, role) FROM st
 42	123778	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	\N	\N	\N	0
 43	333	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	\N	\N	\N	0
 44	444	6b120b0eeb129d31c0fb2a64828331c664394c8d89c6287ebb5e131294e19b85	\N	\N	\N	0
+45	555	a217099448fbcbe0386d5167803eaae8c938c0ca921cada9a7b8a0f8547f0682	\N	\N	\N	0
+47	666	687e31da4e79db2bf0b7ae88b60f5fea0ddec3079ccebf1e39d91951fffc6606	\N	\N	\N	0
 \.
 
 
@@ -164,14 +168,14 @@ COPY public.users (id, login, password, name, surname, patronymic, role) FROM st
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 56, true);
+SELECT pg_catalog.setval('public.sessions_id_seq', 199, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 44, true);
+SELECT pg_catalog.setval('public.users_id_seq', 52, true);
 
 
 --
