@@ -3,36 +3,39 @@ package service
 import (
 	"CRM/go/authService/internal/config"
 	"CRM/go/authService/internal/database/postgres"
-	"CRM/go/authService/internal/model"
+	"CRM/go/authService/internal/models"
+	"CRM/go/authService/internal/proto/authService"
 	"CRM/go/authService/pkg/hash"
 	"time"
 )
 
-func AuthorizeUser(user *model.User) (error, int) {
-
-	user.Password = hash.GenerateHash(user.Password + config.GetConfig().Secret)
-
-	err, httpStatus := postgres.GetUser(user)
-	if err != nil {
-		return err, httpStatus
+func AuthorizeUser(r *authService.AuthorizationRequest) (*models.User, error, int) {
+	user := models.User{
+		Login:    r.Login,
+		Password: hash.GenerateHash(r.Password + config.GetConfig().Secret),
 	}
-	return nil, httpStatus
 
+	err, httpStatus := postgres.GetUser(&user)
+	if err != nil {
+		return nil, err, httpStatus
+	}
+	return &user, nil, httpStatus
 }
 
-func RegisterUser(user *model.User) (error, int) {
-
-	user.Password = hash.GenerateHash(user.Password + config.GetConfig().Secret)
-
-	err, httpStatus := postgres.CreateUser(user)
-	if err != nil {
-		return err, httpStatus
+func RegisterUser(r *authService.RegistrationRequest) (*models.User, error, int) {
+	user := models.User{
+		Login:    r.Login,
+		Password: hash.GenerateHash(r.Password + config.GetConfig().Secret),
 	}
-	return nil, httpStatus
+
+	err, httpStatus := postgres.CreateUser(&user)
+	if err != nil {
+		return nil, err, httpStatus
+	}
+	return &user, nil, httpStatus
 }
 
-func RemoveAllSessionsByUser(user *model.User) (error, int) {
-
+func DeleteAllSessionsByUser(user *models.User) (error, int) {
 	err, httpStatus := postgres.RemoveAllSessionsByUser(user)
 	if err != nil {
 		return err, httpStatus
@@ -41,14 +44,14 @@ func RemoveAllSessionsByUser(user *model.User) (error, int) {
 
 }
 
-func CreateSession(user *model.User) (*model.Session, error, int) {
-
-	var session model.Session
-	session.UserId = user.Id
-	session.AccessToken = hash.GenerateRandomHash()
-	session.DateExpirationAccessToken = time.Now().UTC().Add(time.Minute)
-	session.RefreshToken = hash.GenerateRandomHash()
-	session.DateExpirationRefreshToken = time.Now().UTC().Add(time.Minute * 5)
+func CreateSession(user *models.User) (*models.Session, error, int) {
+	session := models.Session{
+		UserId:                     user.Id,
+		AccessToken:                hash.GenerateRandomHash(),
+		DateExpirationAccessToken:  time.Now().UTC().Add(time.Minute),
+		RefreshToken:               hash.GenerateRandomHash(),
+		DateExpirationRefreshToken: time.Now().UTC().Add(time.Minute * 5),
+	}
 
 	err, httpStatus := postgres.CreateSession(&session)
 	if err != nil {
@@ -58,66 +61,49 @@ func CreateSession(user *model.User) (*model.Session, error, int) {
 	return &session, nil, httpStatus
 }
 
-func CheckAuthorization(session *model.Session) (*string, *string, error, int) {
-
-	if session.AccessToken != "" {
-		err, httpStatus := postgres.GetSessionByAccessToken(session)
-		if err != nil {
-			return nil, nil, err, httpStatus
-		}
-
-		if session.DateExpirationAccessToken.UTC().Compare(time.Now().UTC()) < 0 {
-			err, httpStatus = postgres.RemoveAccessTokenBySessionId(session)
-			if err != nil {
-				return nil, nil, err, httpStatus
-			}
-			message := "access token expired or not valid"
-			flag := "getRefreshToken"
-			return &message, &flag, nil, httpStatus
-		}
-
-		message := "authorization successful"
-		return &message, nil, nil, httpStatus
+func CheckAuthorization(r *authService.CheckAuthorizationRequest) (error, int) {
+	session := models.Session{
+		AccessToken: r.AccessToken,
 	}
 
-	if session.RefreshToken != "" {
-		err, httpStatus := postgres.GetSessionByRefreshToken(session)
-		if err != nil {
-			return nil, nil, err, httpStatus
-		}
-
-		if session.DateExpirationRefreshToken.UTC().Compare(time.Now().UTC()) < 0 {
-			err, httpStatus = postgres.RemoveSessionBySessionId(session)
-			if err != nil {
-				return nil, nil, err, httpStatus
-			}
-			message := "refresh token expired"
-			flag := "authorizationFailed"
-			return &message, &flag, nil, httpStatus
-		}
-
-		err, httpStatus = UpdateAccessTokenByRefreshToken(session) //refactor
-		if err != nil {
-			return nil, nil, err, httpStatus
-		}
-		message := session.AccessToken
-		flag := "newAccessToken"
-		return &message, &flag, nil, httpStatus
-	}
-
-	message := "authorization successful"
-
-	return &message, nil, nil, 0
-}
-
-func UpdateAccessTokenByRefreshToken(session *model.Session) (error, int) {
-
-	session.AccessToken = hash.GenerateRandomHash()
-	session.DateExpirationAccessToken = time.Now().UTC().Add(time.Minute)
-
-	err, httpStatus := postgres.UpdateAccessTokenByRefreshToken(session)
+	err, httpStatus := postgres.GetSessionByAccessToken(&session)
 	if err != nil {
 		return err, httpStatus
 	}
+
+	if session.DateExpirationAccessToken.UTC().Compare(time.Now().UTC()) < 0 {
+		err, httpStatus = postgres.RemoveAccessTokenBySessionId(&session)
+		if err != nil {
+			return err, httpStatus
+		}
+	}
+
 	return nil, httpStatus
+}
+
+func UpdateAccessToken(r *authService.UpdateAccessTokenRequest) (*models.Session, error, int) {
+	session := models.Session{
+		RefreshToken:              r.RefreshToken,
+		AccessToken:               hash.GenerateRandomHash(),
+		DateExpirationAccessToken: time.Now().UTC().Add(time.Minute),
+	}
+
+	err, httpStatus := postgres.GetSessionByRefreshToken(&session)
+	if err != nil {
+		return nil, err, httpStatus
+	}
+
+	if session.DateExpirationRefreshToken.UTC().Compare(time.Now().UTC()) < 0 {
+		err, httpStatus = postgres.RemoveSessionBySessionId(&session)
+		if err != nil {
+			return nil, err, httpStatus
+		}
+	}
+
+	err, httpStatus = postgres.UpdateAccessTokenByRefreshToken(&session)
+	if err != nil {
+		return nil, err, httpStatus
+	}
+
+	return &session, nil, httpStatus
 }

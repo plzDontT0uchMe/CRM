@@ -3,30 +3,25 @@ package main
 import (
 	"CRM/go/apiGateway/internal/config"
 	"CRM/go/apiGateway/internal/handlers"
+	"CRM/go/apiGateway/internal/logger"
+	"CRM/go/apiGateway/internal/middleware/accessCheck"
 	"CRM/go/apiGateway/internal/middleware/cors"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/ilyakaznacheev/cleanenv"
+	"CRM/go/apiGateway/internal/middleware/logging"
+	"net/http"
 )
 
 func main() {
-	cfg := config.GetConfig()
-	err := cleanenv.ReadEnv(&cfg)
-	if err != nil {
-		fmt.Println(err)
-		panic("error reading env")
-	}
-	config.SetConfig(&cfg)
+	mux := http.NewServeMux()
 
-	fmt.Println(cfg)
+	mux.HandleFunc("/api/auth", handlers.Authorization)
+	mux.HandleFunc("/api/reg", handlers.Registration)
+	mux.HandleFunc("/api/checkAuth", handlers.CheckAuthorization)
+	mux.HandleFunc("/api/updateToken", handlers.UpdateAccessToken)
+	mux.Handle("/api/getHelloWorld", accessCheck.AccessCheck(handlers.GetHelloWorld()))
 
-	r := gin.Default()
+	handler := logging.Logging(mux)
+	handler = cors.CORS(handler)
 
-	r.Use(cors.CORSMiddleware())
-
-	r.POST("/api/auth", handlers.Authorization)
-	r.POST("/api/reg", handlers.Registration)
-	r.POST("/api/checkAuth", handlers.CheckAuthorization)
-
-	r.Run(cfg.Host + ":" + cfg.Port)
+	logger.CreateLog("info", "starting server on "+config.GetConfig().HTTPServer.Address)
+	http.ListenAndServe(config.GetConfig().HTTPServer.Address, handler)
 }

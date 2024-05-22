@@ -3,31 +3,25 @@ package main
 import (
 	"CRM/go/authService/internal/config"
 	"CRM/go/authService/internal/handlers"
-	"CRM/go/authService/internal/middleware/cors"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/ilyakaznacheev/cleanenv"
+	"CRM/go/authService/internal/logger"
+	"CRM/go/authService/internal/proto/authService"
+	"google.golang.org/grpc"
+	"net"
 )
 
 func main() {
+	g := grpc.NewServer()
 
-	cfg := config.GetConfig()
-	err := cleanenv.ReadEnv(&cfg)
+	srv := &handlers.Server{}
+
+	authService.RegisterAuthServiceServer(g, srv)
+
+	l, err := net.Listen("tcp", config.GetConfig().HTTPServer.Address)
+
 	if err != nil {
-		fmt.Println(err)
-		panic("error reading env")
+		return
 	}
-	config.SetConfig(&cfg)
 
-	fmt.Println(cfg)
-
-	r := gin.Default()
-
-	r.Use(cors.CORSMiddleware())
-
-	r.POST("/api/auth", handlers.Authorization)
-	r.POST("/api/reg", handlers.Registration)
-	r.POST("/api/checkAuth", handlers.CheckAuthorization)
-
-	r.Run(cfg.Host + ":" + cfg.Port)
+	logger.CreateLog("info", "starting server on "+config.GetConfig().HTTPServer.Address)
+	g.Serve(l)
 }

@@ -1,22 +1,49 @@
 package config
 
+import (
+	"github.com/ilyakaznacheev/cleanenv"
+	"log"
+	"os"
+	"time"
+)
+
 type Config struct {
-	Port       string `yaml:"port" env:"PORT" env-default:"3001"`
-	Host       string `yaml:"host" env:"HOST" env-default:"localhost"`
-	DBHost     string `yaml:"db_host" env:"DB_HOST" env-default:"localhost"`
-	DBPort     string `yaml:"db_port" env:"DB_PORT" env-default:"5432"`
-	DBUser     string `yaml:"db_user" env:"DB_USER" env-default:"postgres"`
-	DBPassword string `yaml:"db_password" env:"DB_PASSWORD" env-default:"0000"`
-	DBName     string `yaml:"db_name" env:"DB_NAME" env-default:"crm"`
-	Secret     string `yaml:"secret" env:"SECRET" env-default:"$ecr3t"`
+	Env        string     `yaml:"env" env-default:"local" env-required:"true"`
+	HTTPServer HTTPServer `yaml:"http_server"`
+	Secret     string     `yaml:"secret" env-default:"$ecr3t"`
+	DB         DB         `yaml:"db"`
+}
+
+type HTTPServer struct {
+	Address     string        `yaml:"address" env-default:"localhost:3001"`
+	Timeout     time.Duration `yaml:"timeout" env-default:"10s"`
+	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"120s"`
+}
+
+type DB struct {
+	DBHost     string `yaml:"host" env-default:"localhost"`
+	DBPort     int    `yaml:"port" env-default:"5432"`
+	DBUser     string `yaml:"user" env-default:"postgres"`
+	DBPassword string `yaml:"password" env-default:"0000"`
+	DBName     string `yaml:"dbname" env-default:"crm-authService"`
 }
 
 var cfg Config
 
-func GetConfig() Config {
-	return cfg
+func init() {
+	configFile, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Failed to get working directory for config: %v", err)
+	}
+	configFile += "\\..\\..\\internal\\config\\config.yaml"
+	if _, err = os.Stat(configFile); err != nil {
+		log.Fatalf("Config file does not exist: %v", err)
+	}
+	if err = cleanenv.ReadConfig(configFile, &cfg); err != nil {
+		log.Fatalf("Failed to read config: %v", err)
+	}
 }
 
-func SetConfig(config *Config) {
-	cfg = *config
+func GetConfig() Config {
+	return cfg
 }

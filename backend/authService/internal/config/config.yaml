@@ -1,0 +1,12 @@
+env: "local"
+http_server:
+  address: "localhost:3001"
+  timeout: 4s
+  idle_timeout: 61s
+secret: "$ecr3t"
+db:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "0000"
+  dbname: "crm-authService"

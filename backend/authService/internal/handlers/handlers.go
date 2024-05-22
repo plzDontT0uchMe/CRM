@@ -1,162 +1,68 @@
 package handlers
 
 import (
-	"CRM/go/authService/internal/model"
+	"CRM/go/authService/internal/proto/authService"
 	"CRM/go/authService/internal/service"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"golang.org/x/net/context"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func Authorization(c *gin.Context) {
-
-	var user model.User
-	err := c.BindJSON(&user)
-	if err != nil {
-		fmt.Printf("error binding json for user: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"successfully": false,
-			"error":        "error binding json for user",
-		})
-		return
-	}
-
-	err, httpStatus := service.AuthorizeUser(&user)
-
-	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error registering user",
-		})
-		return
-	}
-
-	err, httpStatus = service.RemoveAllSessionsByUser(&user)
-
-	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error removing all sessions by user",
-		})
-		return
-	}
-
-	session, err, httpStatus := service.CreateSession(&user)
-
-	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error creating session",
-		})
-		return
-	}
-
-	c.JSON(httpStatus, gin.H{
-		"successfully": true,
-		"message":      "user created successfully, session created successfully",
-		"session":      session,
-	})
-
+type Server struct {
+	authService.UnimplementedAuthServiceServer
 }
 
-func Registration(c *gin.Context) {
-
-	var user model.User
-	err := c.BindJSON(&user)
+func (s *Server) Authorization(ctx context.Context, authorizationRequest *authService.AuthorizationRequest) (*authService.AuthorizationResponse, error) {
+	user, err, httpStatus := service.AuthorizeUser(authorizationRequest)
 	if err != nil {
-		fmt.Printf("error binding json for user: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"successfully": false,
-			"error":        "error binding json for user",
-		})
-		return
+		return &authService.AuthorizationResponse{Successfully: false, Message: "error authorization user", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	err, httpStatus := service.RegisterUser(&user)
-
+	err, httpStatus = service.DeleteAllSessionsByUser(user)
 	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error registering user",
-		})
-		return
+		return &authService.AuthorizationResponse{Successfully: false, Message: "error removing all sessions by user", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	err, httpStatus = service.RemoveAllSessionsByUser(&user)
-
+	session, err, httpStatus := service.CreateSession(user)
 	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error removing all sessions by user",
-		})
-		return
+		return &authService.AuthorizationResponse{Successfully: false, Message: "error creating session", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	session, err, httpStatus := service.CreateSession(&user)
-
-	if err != nil {
-		c.JSON(httpStatus, gin.H{
-			"successfully": false,
-			"error":        "error creating session",
-		})
-		return
-	}
-
-	c.JSON(httpStatus, gin.H{
-		"successfully": true,
-		"message":      "user created successfully, session created successfully",
-		"session":      session,
-	})
-
+	return &authService.AuthorizationResponse{Successfully: true, Message: "authorization successfully", HttpStatus: int64(httpStatus), AccessToken: session.AccessToken, DateExpirationAccessToken: timestamppb.New(session.DateExpirationAccessToken), RefreshToken: session.RefreshToken, DateExpirationRefreshToken: timestamppb.New(session.DateExpirationRefreshToken)}, nil
 }
 
-func CheckAuthorization(c *gin.Context) {
-
-	var session model.Session
-	err := c.BindJSON(&session)
+func (s *Server) Registration(ctx context.Context, registrationRequest *authService.RegistrationRequest) (*authService.RegistrationResponse, error) {
+	user, err, httpStatus := service.RegisterUser(registrationRequest)
 	if err != nil {
-		fmt.Printf("error binding json for session: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"successfully": false,
-			"error":        "error binding json for session",
-		})
-		return
+		return &authService.RegistrationResponse{Successfully: false, Message: "error registering user", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	if session.AccessToken == "" && session.RefreshToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"successfully": false,
-			"error":        "access token and refresh token are empty",
-		})
-		return
-	}
-
-	m, flag, err, httpStatus := service.CheckAuthorization(&session)
-
+	err, httpStatus = service.DeleteAllSessionsByUser(user)
 	if err != nil {
-		if session.AccessToken != "" {
-			c.JSON(httpStatus, gin.H{
-				"successfully": true,
-				"error":        "error checking authorization by access token",
-				"flag":         "getRefreshToken",
-			})
-			return
-		}
-		if session.RefreshToken != "" {
-			c.JSON(httpStatus, gin.H{
-				"successfully": false,
-				"error":        "error checking authorization by refresh token",
-				"flag":         "authorizationFailed",
-			})
-			return
-		}
-		return
+		return &authService.RegistrationResponse{Successfully: false, Message: "error removing all sessions by user", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	c.JSON(httpStatus, gin.H{
-		"successfully": true,
-		"message":      m,
-		"flag":         flag,
-	})
+	session, err, httpStatus := service.CreateSession(user)
+	if err != nil {
+		return &authService.RegistrationResponse{Successfully: false, Message: "error creating session", HttpStatus: int64(httpStatus)}, nil
+	}
 
+	return &authService.RegistrationResponse{Successfully: true, Message: "registration successfully", HttpStatus: int64(httpStatus), AccessToken: session.AccessToken, RefreshToken: session.RefreshToken}, nil
+}
+
+func (s *Server) CheckAuthorization(ctx context.Context, checkAuthorizationRequest *authService.CheckAuthorizationRequest) (*authService.CheckAuthorizationResponse, error) {
+	err, httpStatus := service.CheckAuthorization(checkAuthorizationRequest)
+	if err != nil {
+		return &authService.CheckAuthorizationResponse{Successfully: false, Message: "authorization failed", HttpStatus: int64(httpStatus)}, nil
+	}
+
+	return &authService.CheckAuthorizationResponse{Successfully: true, Message: "authorization successfully", HttpStatus: int64(httpStatus)}, nil
+}
+
+func (s *Server) UpdateAccessToken(ctx context.Context, updateAccessTokenRequest *authService.UpdateAccessTokenRequest) (*authService.UpdateAccessTokenResponse, error) {
+	session, err, httpStatus := service.UpdateAccessToken(updateAccessTokenRequest)
+	if err != nil {
+		return &authService.UpdateAccessTokenResponse{Successfully: false, Message: "error updating access token", HttpStatus: int64(httpStatus)}, nil
+	}
+
+	return &authService.UpdateAccessTokenResponse{Successfully: true, Message: "access token updated successfully", HttpStatus: int64(httpStatus), NewAccessToken: session.AccessToken, NewDateExpirationAccessToken: timestamppb.New(session.DateExpirationAccessToken)}, nil
 }

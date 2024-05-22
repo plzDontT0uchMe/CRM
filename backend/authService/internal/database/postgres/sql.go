@@ -1,188 +1,125 @@
 package postgres
 
 import (
-	"CRM/go/authService/internal/model"
+	"CRM/go/authService/internal/logger"
+	"CRM/go/authService/internal/models"
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 )
 
-func GetUser(user *model.User) (error, int) {
+func GetUser(user *models.User) (error, int) {
+	err := GetDB().QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
 
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
+	if errors.Is(err, sql.ErrNoRows) {
+		logger.CreateLog("error", fmt.Sprintf("user not found: %v", err), "userLogin", user.Login)
+		return err, http.StatusBadRequest
 	}
-	defer db.Close()
 
-	row := db.QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password)
-
-	err = row.Scan(&user.Id)
 	if err != nil {
-		fmt.Println("error binding JSON for user: ", err)
+		logger.CreateLog("error", fmt.Sprintf("query error for user: %v", err), "userLogin", user.Login)
 		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
-
 }
 
-func CreateUser(user *model.User) (error, int) {
+func CreateUser(user *models.User) (error, int) {
+	err := GetDB().QueryRow("INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id", user.Login, user.Password).Scan(&user.Id)
 
-	db, err := Connect()
 	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userLogin", user.Login)
+		return err, http.StatusInternalServerError
 	}
-	defer db.Close()
-
-	row := db.QueryRow("INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id", user.Login, user.Password)
-
-	var tempUser model.User
-	err = row.Scan(&tempUser.Id)
-	if err != nil {
-		fmt.Println("error binding JSON for tempUser: ", err)
-		return err, http.StatusOK
-	}
-
-	user.Id = tempUser.Id
 
 	return nil, http.StatusOK
 }
 
-func RemoveAllSessionsByUser(user *model.User) (error, int) {
-
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
-	}
-	defer db.Close()
-
-	_, err = db.Exec("DELETE FROM sessions WHERE id_user = $1", user.Id)
+func RemoveAllSessionsByUser(user *models.User) (error, int) {
+	_, err := GetDB().Exec("DELETE FROM sessions WHERE id_user = $1", user.Id)
 
 	if err != nil {
-		fmt.Println("database query error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", user.Id, "userLogin", user.Login)
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
-
 }
 
-func CreateSession(session *model.Session) (error, int) {
-
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
-	}
-	defer db.Close()
-
-	_, err = db.Exec("INSERT INTO sessions (id_user, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) VALUES ($1, $2, $3, $4, $5)",
+func CreateSession(session *models.Session) (error, int) {
+	_, err := GetDB().Exec("INSERT INTO sessions (id_user, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) VALUES ($1, $2, $3, $4, $5)",
 		session.UserId, session.AccessToken, session.DateExpirationAccessToken, session.RefreshToken, session.DateExpirationRefreshToken)
 
 	if err != nil {
-		fmt.Println("database query error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", session.UserId)
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
 }
 
-func GetSessionByAccessToken(session *model.Session) (error, int) {
+func GetSessionByAccessToken(session *models.Session) (error, int) {
+	err := GetDB().QueryRow("SELECT id, date_expiration_access_token FROM sessions WHERE access_token = $1 LIMIT 1", session.AccessToken).Scan(&session.Id, &session.DateExpirationAccessToken)
 
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
+	if errors.Is(err, sql.ErrNoRows) {
+		logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
+		return err, http.StatusUnauthorized
 	}
-	defer db.Close()
 
-	row := db.QueryRow("SELECT id, date_expiration_access_token FROM sessions WHERE access_token = $1", session.AccessToken)
-
-	err = row.Scan(&session.Id, &session.DateExpirationAccessToken)
 	if err != nil {
-		fmt.Println("error binding JSON for session: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("error binding JSON for session: %v", err))
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
 }
 
-func RemoveAccessTokenBySessionId(session *model.Session) (error, int) {
+func RemoveAccessTokenBySessionId(session *models.Session) (error, int) {
+	_, err := GetDB().Exec("UPDATE sessions SET access_token = NULL, date_expiration_access_token = NULL WHERE id = $1", session.Id)
 
-	db, err := Connect()
 	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
+		return err, http.StatusInternalServerError
 	}
-	defer db.Close()
 
-	_, err = db.Exec("UPDATE sessions SET access_token = NULL, date_expiration_access_token = NULL WHERE id = $1", session.Id)
+	return errors.New("access token expired"), http.StatusUnauthorized
+}
+
+func GetSessionByRefreshToken(session *models.Session) (error, int) {
+	err := GetDB().QueryRow("SELECT id, date_expiration_refresh_token FROM sessions WHERE refresh_token = $1 LIMIT 1", session.RefreshToken).Scan(&session.Id, &session.DateExpirationRefreshToken)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
+		return err, http.StatusUnauthorized
+	}
 
 	if err != nil {
-		fmt.Println("database query error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("error binding JSON for session: %v", err))
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
 }
 
-func GetSessionByRefreshToken(session *model.Session) (error, int) {
+func RemoveSessionBySessionId(session *models.Session) (error, int) {
+	_, err := db.Exec("DELETE FROM sessions WHERE id = $1", session.Id)
 
-	db, err := Connect()
 	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
-	}
-	defer db.Close()
-
-	row := db.QueryRow("SELECT id, date_expiration_refresh_token FROM sessions WHERE refresh_token = $1", session.RefreshToken)
-
-	err = row.Scan(&session.Id, &session.DateExpirationRefreshToken)
-	if err != nil {
-		fmt.Println("error binding JSON for session: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
+		return err, http.StatusInternalServerError
 	}
 
-	return nil, http.StatusOK
+	return errors.New("refresh token expired"), http.StatusUnauthorized
 }
 
-func RemoveSessionBySessionId(session *model.Session) (error, int) {
-
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
-	}
-	defer db.Close()
-
-	_, err = db.Exec("DELETE FROM sessions WHERE id = $1", session.Id)
-
-	if err != nil {
-		fmt.Println("database query error: ", err)
-		return err, http.StatusOK
-	}
-
-	return nil, http.StatusOK
-}
-
-func UpdateAccessTokenByRefreshToken(session *model.Session) (error, int) {
-
-	db, err := Connect()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-		return err, http.StatusOK
-	}
-	defer db.Close()
-
-	_, err = db.Exec("UPDATE sessions SET access_token = $1, date_expiration_access_token = $2 WHERE refresh_token = $3",
+func UpdateAccessTokenByRefreshToken(session *models.Session) (error, int) {
+	_, err := GetDB().Exec("UPDATE sessions SET access_token = $1, date_expiration_access_token = $2 WHERE refresh_token = $3",
 		session.AccessToken, session.DateExpirationAccessToken, session.RefreshToken)
 
 	if err != nil {
-		fmt.Println("database query error: ", err)
-		return err, http.StatusOK
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
+		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
