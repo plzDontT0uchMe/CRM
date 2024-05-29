@@ -55,7 +55,7 @@
   </script>
   <style  scoped>
   .main{
-    background-color:#16141C; 
+    background-color:#e7e7e7;
        display: flex;
        align-items: center;
        justify-content: center;
@@ -66,7 +66,7 @@
   .main-content{
         height: 85vh;
         width: 87vw;
-        background-color: #24212B;
+        background-color: #e0d6ca;
         border-radius: 15px;
         display: block;
         overflow: hidden;
@@ -86,16 +86,16 @@
     border: none;
     border-radius: 10px;
     font-size:1em;
-    color: white;
+    color: black;;
     width: 80%;
     height: 35px;
-    background-color: #6E52F9;
+    background-color:#eee6d9;
 
   }
   .search input::placeholder
        {
         justify-content: center;
-        color: white;
+        color: black;
         font-size: 1em;
         vertical-align:middle
        }
@@ -112,13 +112,13 @@
   }
   p{
     font-size: 20px;
-    color: white;
+    color: black;
 
   }
   .card{
     width: 90%;
     height: 10%;
-    background-color:#6E52F9;
+    background-color:#eee6d9;
     border-radius: 30px;
     margin: 20px;
     display: flex;
@@ -128,14 +128,14 @@
   }
   .card p{
     font-size: 20px;
-    color: white;
+    color: black;
   }
   .select{
     border: none;
     border-radius:10px;
     font-size: 18px;
-    color: white;
-    background-color: #24212B;
+    color: black;
+    background-color: #e0d6ca;
     position: absolute;
     right: 10px;
 

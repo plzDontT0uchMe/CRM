@@ -20,10 +20,23 @@ const router = createRouter({
       component: () => import('@/views/RegView.vue')
     },
     {
+      path: '/',
+      name: 'main',
+      component:()=>import('@/views/MainView.vue')
+
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/AdminPanel.vue')
-    }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component:()=>import('@/views/ProfileView.vue')
+
+    },
+
 
     
   ]
