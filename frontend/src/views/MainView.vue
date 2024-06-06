@@ -2,70 +2,34 @@
 import axios from '@/axios/index.js'
 import { onMounted, ref } from 'vue'
 
-const user = ref({
-    id: null,
-    role: null,
-    lastActivity: null,
-    dateCreated: null,
-    name: null,
-    surname: null,
-    patronymic: null,
-    gender: null,
-    dateBorn: null,
-    image: null,
-})
-
-const formatDateWithoutTime = (dateStr) => {
-    const date = new Date(dateStr)
-    const day = date.getDate()
-    const month = date.getMonth() + 1 // Месяцы начинаются с 0, поэтому добавляем 1
-    const year = date.getFullYear()
-
-    return `${day}.${month}.${year}`
-}
-
-const formatDateWithTime = (dateStr) => {
-    const date = new Date(dateStr)
-    const day = date.getDate()
-    const month = date.getMonth() + 1 // Месяцы начинаются с 0, поэтому добавляем 1
-    const year = date.getFullYear()
-    const hours = date.getHours()
-    const minutes = date.getMinutes()
-    const seconds = date.getSeconds()
-
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`
-}
-
-const getUser = async () => {
-    try {
-        const { data } = await axios.get('/api/getUser')
-        console.log(data)
-        if (data.successfully) {
-            user.value = data.user
-            console.log(user.value)
-        }
-
+const menuItems = ref([
+    {
+        name: 'subscriptions',
+        route: 'subscriptions'
     }
-    catch (err) {
-        console.log(err)
-    }
-}
-
-onMounted(() => {
-    //getUser()
-})
-
+])
 </script>
 
 <template>
-    <div class="flex justify-center items-center">
-        <div class="p-4 bg-blue-200 rounded">
-            <h2 class="text-lg font-bold">Дата:</h2>
-            <p>{{ formatDateWithoutTime(user.dateCreated) }}</p>
+    <div class="flex justify-between items-center">
+        <div class="w-[15%] h-96 bg-white">
+            <ul class="menu flex items-center w-full h-full bg-navbar rounded-xl">
+                <li class="w-full p-1" v-for="(item, index) in menuItems" :key="index">
+                    <router-link :to="{ name: item.route }" class="w-full h-full flex items-center justify-center">
+                        {{ item.name }}
+                    </router-link>
+                    <ul v-if="item.children" class="w-full h-full bg-white rounded-xl">
+                        <li class="w-full p-1" v-for="(child, index) in item.children" :key="index">
+                            <router-link :to="{ name: child.route }" class="w-full h-full flex items-center justify-center">
+                                {{ child.name }}
+                            </router-link>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-        <div class="p-4 bg-blue-200 rounded">
-            <h2 class="text-lg font-bold">Дата:</h2>
-            <p>{{ formatDateWithTime(user.lastActivity) }}</p>
+        <div class="w-[83%] h-96 bg-white">
+            <RouterView />
         </div>
     </div>
 </template>

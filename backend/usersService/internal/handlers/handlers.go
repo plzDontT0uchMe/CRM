@@ -26,7 +26,7 @@ func (s *Server) GetUser(ctx context.Context, getUserRequest *usersService.GetUs
 		return &usersService.GetUserResponse{Successfully: false, Message: "error getting user", HttpStatus: int64(httpStatus)}, nil
 	}
 
-	return &usersService.GetUserResponse{Successfully: true, Message: "getting user successfully", HttpStatus: int64(httpStatus), Name: user.Name.String, Surname: user.Surname.String, Patronymic: user.Patronymic.String, Gender: int64(user.Gender), DateBorn: utils.ConvertSQLNullTimeToTimestamp(user.DateBorn), LinkImage: user.LinkImage.String}, nil
+	return &usersService.GetUserResponse{Successfully: true, Message: "getting user successfully", HttpStatus: int64(httpStatus), Name: user.Name.String, Surname: user.Surname.String, Patronymic: user.Patronymic.String, Gender: int64(user.Gender), DateBorn: utils.ConvertSQLNullTimeToTimestamp(user.DateBorn)}, nil
 }
 
 func (s *Server) UpdateUser(ctx context.Context, updateUserRequest *usersService.UpdateUserRequest) (*usersService.UpdateUserResponse, error) {

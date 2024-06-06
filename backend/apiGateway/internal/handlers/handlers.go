@@ -125,7 +125,9 @@ func Authorization(w http.ResponseWriter, r *http.Request) {
 
 	users := usersService.NewUsersServiceClient(conn)
 
-	respUsers, _ := users.GetUser(context.Background(), &usersService.GetUserRequest{IdAccount: respAuth.IdAccount})
+	respUsers, _ := users.GetUser(context.Background(), &usersService.GetUserRequest{
+		IdAccount: respAuth.IdAccount,
+	})
 
 	if respUsers == nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -146,6 +148,47 @@ func Authorization(w http.ResponseWriter, r *http.Request) {
 		})
 		w.Write(res)
 		logger.CreateLog("info", respUsers.Message)
+		return
+	}
+
+	conn, err = grpc.Dial(config.GetConfig().StorageService.Address, grpc.WithInsecure())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]any{
+			"successfully": false,
+			"message":      "connection error for storage service",
+		})
+		w.Write(res)
+		logger.CreateLog("error", "connection error for storage service")
+		return
+	}
+	defer conn.Close()
+
+	storage := storageService.NewStorageServiceClient(conn)
+
+	respStorage, _ := storage.GetLinkByIdAccount(context.Background(), &storageService.GetLinkByIdAccountRequest{
+		IdAccount: respAuth.IdAccount,
+	})
+
+	if respStorage == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]any{
+			"successfully": false,
+			"message":      "response from storage service is nil",
+		})
+		w.Write(res)
+		logger.CreateLog("error", "Authorization handler, response from storage service is nil")
+		return
+	}
+
+	if !respStorage.Successfully {
+		w.WriteHeader(int(respStorage.HttpStatus))
+		res, _ := json.Marshal(map[string]any{
+			"successfully": respStorage.Successfully,
+			"message":      respStorage.Message,
+		})
+		w.Write(res)
+		logger.CreateLog("info", respStorage.Message)
 		return
 	}
 
@@ -180,7 +223,7 @@ func Authorization(w http.ResponseWriter, r *http.Request) {
 		Patronymic:   respUsers.Patronymic,
 		Gender:       int(respUsers.Gender),
 		DateBorn:     utils.ConvertTimestampToNullString(respUsers.DateBorn),
-		Image:        respUsers.LinkImage,
+		Image:        respStorage.Link,
 	}
 	res, _ := json.Marshal(map[string]any{
 		"successfully": true,
@@ -309,6 +352,47 @@ func Registration(w http.ResponseWriter, r *http.Request) {
 		})
 		w.Write(res)
 		logger.CreateLog("info", respUsers.Message)
+		return
+	}
+
+	conn, err = grpc.Dial(config.GetConfig().StorageService.Address, grpc.WithInsecure())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]any{
+			"successfully": false,
+			"message":      "connection error for storage service",
+		})
+		w.Write(res)
+		logger.CreateLog("error", "connection error for storage service")
+		return
+	}
+	defer conn.Close()
+
+	storage := storageService.NewStorageServiceClient(conn)
+
+	respStorage, _ := storage.Registration(context.Background(), &storageService.RegistrationRequest{
+		IdAccount: respAuth.IdAccount,
+	})
+
+	if respStorage == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]any{
+			"successfully": false,
+			"message":      "response from storage service is nil",
+		})
+		w.Write(res)
+		logger.CreateLog("error", "Registration handler, response from storage service is nil")
+		return
+	}
+
+	if !respStorage.Successfully {
+		w.WriteHeader(int(respStorage.HttpStatus))
+		res, _ := json.Marshal(map[string]any{
+			"successfully": respStorage.Successfully,
+			"message":      respStorage.Message,
+		})
+		w.Write(res)
+		logger.CreateLog("info", respStorage.Message)
 		return
 	}
 
@@ -662,6 +746,47 @@ func GetUser() http.Handler {
 			return
 		}
 
+		conn, err = grpc.Dial(config.GetConfig().StorageService.Address, grpc.WithInsecure())
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      "connection error for storage service",
+			})
+			w.Write(res)
+			logger.CreateLog("error", "connection error for storage service")
+			return
+		}
+		defer conn.Close()
+
+		storage := storageService.NewStorageServiceClient(conn)
+
+		respStorage, _ := storage.GetLinkByIdAccount(context.Background(), &storageService.GetLinkByIdAccountRequest{
+			IdAccount: int64(idAccount),
+		})
+
+		if respStorage == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      "response from storage service is nil",
+			})
+			w.Write(res)
+			logger.CreateLog("error", "Authorization handler, response from storage service is nil")
+			return
+		}
+
+		if !respStorage.Successfully {
+			w.WriteHeader(int(respStorage.HttpStatus))
+			res, _ := json.Marshal(map[string]any{
+				"successfully": respStorage.Successfully,
+				"message":      respStorage.Message,
+			})
+			w.Write(res)
+			logger.CreateLog("info", respStorage.Message)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		user := models.User{
 			ID:           idAccount,
@@ -673,7 +798,7 @@ func GetUser() http.Handler {
 			Patronymic:   resp.Patronymic,
 			Gender:       int(resp.Gender),
 			DateBorn:     utils.ConvertTimestampToNullString(resp.DateBorn),
-			Image:        resp.LinkImage,
+			Image:        respStorage.Link,
 		}
 
 		res, _ := json.Marshal(map[string]any{
@@ -797,6 +922,47 @@ func GetUserById() http.Handler {
 			return
 		}
 
+		conn, err = grpc.Dial(config.GetConfig().StorageService.Address, grpc.WithInsecure())
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			resp, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      "connection error for storage service",
+			})
+			w.Write(resp)
+			logger.CreateLog("error", "connection error for storage service")
+			return
+		}
+		defer conn.Close()
+
+		storage := storageService.NewStorageServiceClient(conn)
+
+		respStorage, _ := storage.GetLinkByIdAccount(context.Background(), &storageService.GetLinkByIdAccountRequest{
+			IdAccount: int64(id),
+		})
+
+		if respStorage == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      "response from storage service is nil",
+			})
+			w.Write(res)
+			logger.CreateLog("error", "Authorization handler, response from storage service is nil")
+			return
+		}
+
+		if !respStorage.Successfully {
+			w.WriteHeader(int(respStorage.HttpStatus))
+			res, _ := json.Marshal(map[string]any{
+				"successfully": respStorage.Successfully,
+				"message":      respStorage.Message,
+			})
+			w.Write(res)
+			logger.CreateLog("info", respStorage.Message)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		user := models.User{
 			ID:           id,
@@ -808,7 +974,7 @@ func GetUserById() http.Handler {
 			Patronymic:   respUsers.Patronymic,
 			Gender:       int(respUsers.Gender),
 			DateBorn:     utils.ConvertTimestampToNullString(respUsers.DateBorn),
-			Image:        respUsers.LinkImage,
+			Image:        respStorage.Link,
 		}
 
 		res, _ := json.Marshal(map[string]any{
@@ -859,7 +1025,6 @@ func UpdateUser() http.Handler {
 			return
 		}
 
-		linkImage := r.FormValue("image")
 		file, fileHeader, _ := r.FormFile("image")
 		if file != nil {
 			file.Close()
@@ -875,8 +1040,6 @@ func UpdateUser() http.Handler {
 				logger.CreateLog("error", "unsupported format")
 				return
 			}
-
-			fmt.Println(fileHeader.Size)
 
 			if fileHeader.Size > 3<<20 {
 				w.WriteHeader(http.StatusBadRequest)
@@ -917,8 +1080,9 @@ func UpdateUser() http.Handler {
 			storage := storageService.NewStorageServiceClient(conn)
 
 			respStorage, _ := storage.UploadImage(context.Background(), &storageService.UploadImageRequest{
-				Image:  fileBytes,
-				Format: fileFormat,
+				IdAccount: int64(idAccount),
+				Image:     fileBytes,
+				Format:    fileFormat,
 			})
 
 			if respStorage == nil {
@@ -941,8 +1105,6 @@ func UpdateUser() http.Handler {
 				w.Write(res)
 				return
 			}
-
-			linkImage = respStorage.Link
 		}
 
 		conn, err := grpc.Dial(config.GetConfig().UsersService.Address, grpc.WithInsecure())
@@ -967,7 +1129,6 @@ func UpdateUser() http.Handler {
 			Patronymic: r.FormValue("patronymic"),
 			Gender:     int64(gender),
 			DateBorn:   dateBorn,
-			LinkImage:  linkImage,
 		})
 
 		w.WriteHeader(int(respUsers.HttpStatus))
@@ -994,7 +1155,7 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	linkImage := parts[3]
+	link := parts[3]
 
 	conn, err := grpc.Dial(config.GetConfig().StorageService.Address, grpc.WithInsecure())
 	if err != nil {
@@ -1012,7 +1173,7 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 	storage := storageService.NewStorageServiceClient(conn)
 
 	resp, _ := storage.GetImage(context.Background(), &storageService.GetImageRequest{
-		LinkImage: linkImage,
+		Link: link,
 	})
 
 	if resp == nil {

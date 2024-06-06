@@ -22,7 +22,7 @@ func CreateUser(user *models.User) (error, int) {
 }
 
 func GetUser(user *models.User) (error, int) {
-	err := GetDB().QueryRow(context.Background(), "SELECT name, surname, patronymic, gender, date_born, link_image FROM users WHERE id_account = $1", user.IdAccount).Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Gender, &user.DateBorn, &user.LinkImage)
+	err := GetDB().QueryRow(context.Background(), "SELECT name, surname, patronymic, gender, date_born FROM users WHERE id_account = $1", user.IdAccount).Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Gender, &user.DateBorn)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -37,7 +37,7 @@ func GetUser(user *models.User) (error, int) {
 }
 
 func UpdateUser(user models.User) (error, int) {
-	_, err := GetDB().Exec(context.Background(), "UPDATE users SET name = $1, surname = $2, patronymic = $3, gender = $4, date_born = $5, link_image = $6 WHERE id_account = $7", user.Name, user.Surname, user.Patronymic, user.Gender, user.DateBorn, user.LinkImage, user.IdAccount)
+	_, err := GetDB().Exec(context.Background(), "UPDATE users SET name = $1, surname = $2, patronymic = $3, gender = $4, date_born = $5 WHERE id_account = $6", user.Name, user.Surname, user.Patronymic, user.Gender, user.DateBorn, user.IdAccount)
 
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "UserIdAccount", user.IdAccount)

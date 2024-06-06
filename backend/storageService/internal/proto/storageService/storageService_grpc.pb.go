@@ -19,16 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	StorageService_UploadImage_FullMethodName = "/storageService.StorageService/UploadImage"
-	StorageService_GetImage_FullMethodName    = "/storageService.StorageService/GetImage"
+	StorageService_Registration_FullMethodName       = "/storageService.StorageService/Registration"
+	StorageService_UploadImage_FullMethodName        = "/storageService.StorageService/UploadImage"
+	StorageService_GetImage_FullMethodName           = "/storageService.StorageService/GetImage"
+	StorageService_GetLinkByIdAccount_FullMethodName = "/storageService.StorageService/GetLinkByIdAccount"
 )
 
 // StorageServiceClient is the client API for StorageService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StorageServiceClient interface {
+	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error)
 	GetImage(ctx context.Context, in *GetImageRequest, opts ...grpc.CallOption) (*GetImageResponse, error)
+	GetLinkByIdAccount(ctx context.Context, in *GetLinkByIdAccountRequest, opts ...grpc.CallOption) (*GetLinkByIdAccountResponse, error)
 }
 
 type storageServiceClient struct {
@@ -37,6 +41,15 @@ type storageServiceClient struct {
 
 func NewStorageServiceClient(cc grpc.ClientConnInterface) StorageServiceClient {
 	return &storageServiceClient{cc}
+}
+
+func (c *storageServiceClient) Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error) {
+	out := new(RegistrationResponse)
+	err := c.cc.Invoke(ctx, StorageService_Registration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *storageServiceClient) UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error) {
@@ -57,12 +70,23 @@ func (c *storageServiceClient) GetImage(ctx context.Context, in *GetImageRequest
 	return out, nil
 }
 
+func (c *storageServiceClient) GetLinkByIdAccount(ctx context.Context, in *GetLinkByIdAccountRequest, opts ...grpc.CallOption) (*GetLinkByIdAccountResponse, error) {
+	out := new(GetLinkByIdAccountResponse)
+	err := c.cc.Invoke(ctx, StorageService_GetLinkByIdAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageServiceServer is the server API for StorageService service.
 // All implementations must embed UnimplementedStorageServiceServer
 // for forward compatibility
 type StorageServiceServer interface {
+	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error)
 	GetImage(context.Context, *GetImageRequest) (*GetImageResponse, error)
+	GetLinkByIdAccount(context.Context, *GetLinkByIdAccountRequest) (*GetLinkByIdAccountResponse, error)
 	mustEmbedUnimplementedStorageServiceServer()
 }
 
@@ -70,11 +94,17 @@ type StorageServiceServer interface {
 type UnimplementedStorageServiceServer struct {
 }
 
+func (UnimplementedStorageServiceServer) Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Registration not implemented")
+}
 func (UnimplementedStorageServiceServer) UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadImage not implemented")
 }
 func (UnimplementedStorageServiceServer) GetImage(context.Context, *GetImageRequest) (*GetImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
+}
+func (UnimplementedStorageServiceServer) GetLinkByIdAccount(context.Context, *GetLinkByIdAccountRequest) (*GetLinkByIdAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLinkByIdAccount not implemented")
 }
 func (UnimplementedStorageServiceServer) mustEmbedUnimplementedStorageServiceServer() {}
 
@@ -87,6 +117,24 @@ type UnsafeStorageServiceServer interface {
 
 func RegisterStorageServiceServer(s grpc.ServiceRegistrar, srv StorageServiceServer) {
 	s.RegisterService(&StorageService_ServiceDesc, srv)
+}
+
+func _StorageService_Registration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).Registration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageService_Registration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).Registration(ctx, req.(*RegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _StorageService_UploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -125,6 +173,24 @@ func _StorageService_GetImage_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageService_GetLinkByIdAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLinkByIdAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).GetLinkByIdAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageService_GetLinkByIdAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).GetLinkByIdAccount(ctx, req.(*GetLinkByIdAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageService_ServiceDesc is the grpc.ServiceDesc for StorageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -133,12 +199,20 @@ var StorageService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*StorageServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Registration",
+			Handler:    _StorageService_Registration_Handler,
+		},
+		{
 			MethodName: "UploadImage",
 			Handler:    _StorageService_UploadImage_Handler,
 		},
 		{
 			MethodName: "GetImage",
 			Handler:    _StorageService_GetImage_Handler,
+		},
+		{
+			MethodName: "GetLinkByIdAccount",
+			Handler:    _StorageService_GetLinkByIdAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

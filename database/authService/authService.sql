@@ -21,7 +21,7 @@ DROP DATABASE IF EXISTS "crm-authService";
 -- Name: crm-authService; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE "crm-authService" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc;
+CREATE DATABASE "crm-authService" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Russian_Russia.1251';
 
 
 ALTER DATABASE "crm-authService" OWNER TO postgres;
@@ -123,8 +123,12 @@ ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.use
 --
 
 COPY public.accounts (id, login, password, role, last_activity, date_created) FROM stdin;
-61	321	d9b23136ec5a38bc8714537d82358a2f5c406e56a616fdc941231bd27b24d68c	0	2024-05-30 10:05:25.00969	2024-05-30 09:33:47.588416
-54	123	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	0	2024-05-30 20:06:13.600541	2024-05-27 19:18:20.819001
+54	123	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	0	2024-06-06 22:54:43.279179	2024-05-27 19:18:20.819001
+65	555	a217099448fbcbe0386d5167803eaae8c938c0ca921cada9a7b8a0f8547f0682	0	2024-06-06 22:58:36.995765	2024-06-05 14:42:05.763031
+64	666	687e31da4e79db2bf0b7ae88b60f5fea0ddec3079ccebf1e39d91951fffc6606	0	2024-06-06 23:00:37.899786	2024-06-05 14:40:03.117513
+61	321	d9b23136ec5a38bc8714537d82358a2f5c406e56a616fdc941231bd27b24d68c	0	2024-06-06 23:00:59.546382	2024-05-30 09:33:47.588416
+67	333	3d9811cb89f6961e0f3a65d73785fa682284582842754dc7f1554fbdb1a701c5	0	2024-06-06 23:09:09.129363	2024-06-06 23:09:09.129363
+63	777	4e5342de9fe02f90ce045fe536e1c47f937108079b1a64cda0039153422d7b1d	0	2024-06-06 14:35:16.436173	2024-06-05 13:44:39.390543
 \.
 
 
@@ -133,8 +137,7 @@ COPY public.accounts (id, login, password, role, last_activity, date_created) FR
 --
 
 COPY public.sessions (id, id_account, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) FROM stdin;
-290	61	f0f7456bacd5617c893055edef29ea5ebaa369114d9edb259a0f15c775d90bb3	2024-05-30 10:06:24.999964	f7372a9d353d1bc8b98b3fcca6a8f27e1bce48c6b0fc673c95bfbf6caccad861	2024-05-30 10:08:40.498589
-311	54	1bfe25952631d6c1eb489d67b51704fd8b1c9fdc49c19715d5761490169459e9	2024-05-30 20:07:08.95911	abbbda2be9466dfe866e9cf570e2ab37f1f4bb809e8e9b98e153af054bc944f3	2024-05-30 20:11:08.95911
+474	67	32913a6c769d2dd7ab248a3ca7d8d8a1b93491b9a697fd5560d927112f23d3a8	2024-06-06 23:10:09.167562	50021bddb12c46db737d855573475339d972f7d20f5404d9af8c223f49a95732	2024-06-06 23:14:09.167562
 \.
 
 
@@ -142,14 +145,14 @@ COPY public.sessions (id, id_account, access_token, date_expiration_access_token
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 311, true);
+SELECT pg_catalog.setval('public.sessions_id_seq', 474, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 61, true);
+SELECT pg_catalog.setval('public.users_id_seq', 67, true);
 
 
 --

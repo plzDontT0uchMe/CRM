@@ -21,7 +21,7 @@ DROP DATABASE IF EXISTS "crm-usersService";
 -- Name: crm-usersService; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE "crm-usersService" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc;
+CREATE DATABASE "crm-usersService" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Russian_Russia.1251';
 
 
 ALTER DATABASE "crm-usersService" OWNER TO postgres;
@@ -54,8 +54,7 @@ CREATE TABLE public.users (
     surname character varying,
     patronymic character varying,
     gender integer DEFAULT 0,
-    date_born timestamp without time zone,
-    link_image character varying
+    date_born date
 );
 
 
@@ -94,9 +93,13 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, id_account, name, surname, patronymic, gender, date_born, link_image) FROM stdin;
-1	54	Dmitry	Homyakov	Sergeevich	1	2002-03-20 11:54:21	\N
-3	61	\N	\N	\N	0	\N	\N
+COPY public.users (id, id_account, name, surname, patronymic, gender, date_born) FROM stdin;
+1	54	Dmitry1	Homyakov	Sergeevich	1	2002-03-20
+3	61	Kostya	The	Beast	1	1999-02-10
+5	64	1234556			1	\N
+4	63	3211	2222	2223	2	2005-05-10
+6	65	Minion	Champion		0	1977-02-02
+10	67	\N	\N	\N	0	\N
 \.
 
 
@@ -104,7 +107,7 @@ COPY public.users (id, id_account, name, surname, patronymic, gender, date_born,
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+SELECT pg_catalog.setval('public.users_id_seq', 10, true);
 
 
 --

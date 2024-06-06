@@ -7,7 +7,14 @@ const router = createRouter({
         {
             path: '/',
             name: 'main',
-            component: () => import('../views/MainView.vue')
+            component: () => import('../views/MainView.vue'),
+            children: [
+                {
+                    path: 'subs',
+                    name: 'subscriptions',
+                    component: () => import('../views/SubscriptionsView.vue')
+                }
+            ]
         },
         {
             path: '/auth',

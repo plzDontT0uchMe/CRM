@@ -1,0 +1,15 @@
+env: "development"
+api_gateway:
+    host: "localhost"
+    port: 3000
+    address: "localhost:3000"
+subs_service:
+    host: "localhost"
+    port: 3004
+    address: "localhost:3004"
+db:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "0000"
+    dbname: "crm-subsService"

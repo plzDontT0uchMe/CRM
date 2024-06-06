@@ -27,7 +27,6 @@ customAxios.interceptors.response.use(async function(response) {
             return customAxios(response.config)
         } else {
             useUserStore().data = null
-            await router.push({ name: 'auth' })
         }
     }
     return response

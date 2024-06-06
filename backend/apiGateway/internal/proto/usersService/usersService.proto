@@ -25,10 +25,9 @@ message GetUserResponse {
   string patronymic = 3;
   int64 gender = 4;
   google.protobuf.Timestamp dateBorn = 5;
-  string linkImage = 6;
-  bool successfully = 7;
-  string message = 8;
-  int64 httpStatus = 9;
+  bool successfully = 6;
+  string message = 7;
+  int64 httpStatus = 8;
 }
 
 message UpdateUserRequest {
@@ -38,7 +37,6 @@ message UpdateUserRequest {
   string patronymic = 4;
   int64 gender = 5;
   google.protobuf.Timestamp dateBorn = 6;
-  string linkImage = 7;
 }
 
 message UpdateUserResponse {

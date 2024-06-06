@@ -42,7 +42,6 @@ func UpdateUser(r *usersService.UpdateUserRequest) (error, int) { //refactor
 		Patronymic: utils.ConvertStringToSQLNullString(r.Patronymic),
 		Gender:     int(r.Gender),
 		DateBorn:   utils.ConvertTimestampToSQLNullTime(r.DateBorn),
-		LinkImage:  utils.ConvertStringToSQLNullString(r.LinkImage),
 	}
 	err, httpStatus := postgres.UpdateUser(user)
 	if err != nil {

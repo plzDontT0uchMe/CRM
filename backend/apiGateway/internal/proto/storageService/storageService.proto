@@ -3,9 +3,20 @@ syntax = "proto3";
 package storageService;
 option go_package = "/storageService";
 
+message RegistrationRequest {
+  int64 idAccount = 1;
+}
+
+message RegistrationResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+}
+
 message UploadImageRequest {
-  bytes image = 1;
-  string format = 2;
+  int64 idAccount = 1;
+  bytes image = 2;
+  string format = 3;
 }
 
 message UploadImageResponse {
@@ -16,7 +27,7 @@ message UploadImageResponse {
 }
 
 message GetImageRequest {
-  string linkImage = 1;
+  string link = 1;
 }
 
 message GetImageResponse {
@@ -26,7 +37,20 @@ message GetImageResponse {
   int64 httpStatus = 4;
 }
 
+message GetLinkByIdAccountRequest {
+  int64 idAccount = 1;
+}
+
+message GetLinkByIdAccountResponse {
+  string link = 1;
+  bool successfully = 2;
+  string message = 3;
+  int64 httpStatus = 4;
+}
+
 service StorageService {
+  rpc Registration(RegistrationRequest) returns (RegistrationResponse);
   rpc UploadImage(UploadImageRequest) returns (UploadImageResponse);
   rpc GetImage(GetImageRequest) returns (GetImageResponse);
+  rpc GetLinkByIdAccount(GetLinkByIdAccountRequest) returns (GetLinkByIdAccountResponse);
 }
