@@ -1,0 +1,65 @@
+syntax="proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package authService;
+option go_package = "/authService";
+
+message AuthorizationRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message AuthorizationResponse {
+  string accessToken = 1;
+  google.protobuf.Timestamp dateExpirationAccessToken = 2;
+  string refreshToken = 3;
+  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
+  bool successfully = 5;
+  string message = 6;
+  int64 httpStatus = 7;
+}
+
+message RegistrationRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message RegistrationResponse {
+  string accessToken = 1;
+  google.protobuf.Timestamp dateExpirationAccessToken = 2;
+  string refreshToken = 3;
+  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
+  bool successfully = 5;
+  string message = 6;
+  int64 httpStatus = 7;
+}
+
+message CheckAuthorizationRequest {
+  string accessToken = 1;
+}
+
+message CheckAuthorizationResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+}
+
+message UpdateAccessTokenRequest {
+  string refreshToken = 1;
+}
+
+message UpdateAccessTokenResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+  string newAccessToken = 4;
+  google.protobuf.Timestamp newDateExpirationAccessToken = 5;
+}
+
+service AuthService {
+  rpc Authorization (AuthorizationRequest) returns (AuthorizationResponse) {}
+  rpc Registration (RegistrationRequest) returns (RegistrationResponse) {}
+  rpc CheckAuthorization (CheckAuthorizationRequest) returns (CheckAuthorizationResponse) {}
+  rpc UpdateAccessToken (UpdateAccessTokenRequest) returns (UpdateAccessTokenResponse) {}
+}

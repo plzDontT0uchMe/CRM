@@ -1,27 +1,35 @@
 <script setup>
 import axios from '@/axios/index.js'
 import { ref } from 'vue'
-import { useCookies } from "vue3-cookies";
 import router from '@/router/index.js'
+import { useUserStore } from '@/stores/user.js'
+import { useToastStore } from '@/stores/toast.js'
 
-const { cookies } = useCookies();
+const userStore = useUserStore()
+const toastStore = useToastStore()
 
 const login = ref('')
 const password = ref('')
 
 const reg = async () => {
+    const notifyId = toastStore.startToast('loading', 'Выполняется регистрация... 🚀', 'top-center')
     try {
-        const resp = await axios.post('/api/reg', {
+        const { data } = await axios.post('/api/reg', {
             login: login.value,
             password: password.value
         })
-        if (resp.data.successfully) {
-            cookies.set('access_token', resp.data.session.access_token)
-            cookies.set('refresh_token', resp.data.session.refresh_token)
-            router.push({ name: 'main' })
+        if (data.successfully) {
+            userStore.data = data?.user
+            toastStore.stopToast(notifyId, data.message, userStore.data ? 'success' : 'error')
+            setTimeout(async () => {
+                await router.push({ name: 'main' })
+            }, 2000)
+        } else {
+            toastStore.stopToast(notifyId, data.message, 'error')
         }
-    } catch (error) {
-        console.error(error)
+    }
+    catch (err) {
+        console.log(err)
     }
 }
 

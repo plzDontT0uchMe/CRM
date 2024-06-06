@@ -1,48 +1,37 @@
 <script setup>
 import axios from '@/axios/index.js'
 import router from '@/router/index.js'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/user.js'
+import { useToastStore } from '@/stores/toast.js'
+
+const userStore = useUserStore()
+const toastStore = useToastStore()
 
 const login = ref('')
 const password = ref('')
 
 const auth = async () => {
+    const notifyId = toastStore.startToast('loading', 'Выполняется авторизация... 🚀', 'top-center')
     try {
         const { data } = await axios.post('/api/auth', {
             login: login.value,
             password: password.value
         })
-        console.log(data)
         if (data.successfully) {
-            router.push("/not_suck")
+            userStore.data = data?.user
+            toastStore.stopToast(notifyId, data.message, userStore.data ? 'success' : 'error')
+            setTimeout(async () => {
+                await router.push({ name: 'main' })
+            }, 2000)
+        } else {
+            toastStore.stopToast(notifyId, data.message, 'error')
         }
     }
     catch (err) {
         console.log(err)
     }
 }
-
-const checkAuth = async () => {
-    try {
-        const { data } = await axios.get('/api/checkAuth')
-        if (data.successfully) {
-            router.push("/not_suck")
-        }
-    }
-    catch (err) {
-        console.log(err)
-    }
-}
-
-const getHelloWorld = async () => {
-    const { data } = await axios.get("/api/getHelloWorld")
-    console.log(data)
-}
-
-onMounted(() => {
-    checkAuth()
-})
-
 </script>
 
 <template>
@@ -75,7 +64,6 @@ onMounted(() => {
             </label>
         </label>
         <button class="btn btn-outline" @click="auth">Submit</button>
-        <button class="btn btn-outline" @click="getHelloWorld">GetHelloWorld</button>
     </div>
 </template>
 

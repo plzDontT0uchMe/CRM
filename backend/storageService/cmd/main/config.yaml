@@ -1,0 +1,20 @@
+env: "production"
+api_gateway:
+    host: "45.156.23.236"
+    port: 3000
+    address: "45.156.23.236:3000"
+auth_service:
+    host: "45.156.23.236"
+    port: 3001
+    address: "45.156.23.236:3001"
+users_service:
+    host: "45.156.23.236"
+    port: 3002
+    address: "45.156.23.236:3002"
+secret: "$ecr3t"
+db:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "0000"
+  dbname: "crm-authService"
