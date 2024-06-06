@@ -1,16 +1,17 @@
-env: "local"
-client:
-    protocol: "https"
-    host: "45.156.23.236"
-    port: 5173
-    address: "https://crm-fitness.ru"
+env: "production"
 api_gateway:
-    protocol: "https"
-    host: "45.156.23.236"
+    host: "193.169.105.90"
     port: 3000
-    address: "https://dev.crm-fitness:3000"
+    address: "193.169.105.90:3000"
 auth_service:
-    protocol: "https"
-    host: "45.156.23.236"
+    host: "193.169.105.90"
     port: 3001
-    address: "https://45.156.23.236:3001"
+    address: "193.169.105.90:3001"
+users_service:
+    host: "193.169.105.90"
+    port: 3002
+    address: "193.169.105.90:3002"
+storage_service:
+    host: "193.169.105.90"
+    port: 3003
+    address: "193.169.105.90:3003"

@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+    api-gateway:
+        container_name: api-gateway
+        image: plzdontt0uchme/crm-api-gateway
+        network_mode: host
+    auth-service:
+        container_name: auth-service
+        image: plzdontt0uchme/crm-auth-service
+        network_mode: host
+    users-service:
+        container_name: users-service
+        image: plzdontt0uchme/crm-users-service
+        network_mode: host

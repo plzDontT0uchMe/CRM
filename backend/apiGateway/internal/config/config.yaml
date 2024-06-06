@@ -1,9 +1,17 @@
-env: "local"
-http_server:
-  address: "localhost:3000"
-  timeout: 4s
-  idle_timeout: 61s
+env: "development"
+api_gateway:
+    host: "localhost"
+    port: 3000
+    address: "localhost:3000"
 auth_service:
-  address: "localhost:3001"
-  timeout: 4s
-  idle_timeout: 61s
+    host: "localhost"
+    port: 3001
+    address: "localhost:3001"
+users_service:
+    host: "localhost"
+    port: 3002
+    address: "localhost:3002"
+storage_service:
+    host: "localhost"
+    port: 3003
+    address: "localhost:3003"

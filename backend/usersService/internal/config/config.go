@@ -7,16 +7,24 @@ import (
 )
 
 type Config struct {
-	Env         string  `yaml:"env"`
-	Client      Service `yaml:"client"`
-	ApiGateway  Service `yaml:"api_gateway"`
-	AuthService Service `yaml:"auth_service"`
+	Env          string  `yaml:"env"`
+	ApiGateway   Service `yaml:"api_gateway"`
+	UsersService Service `yaml:"users_service"`
+	DB           DB      `yaml:"db"`
 }
 
 type Service struct {
 	Host    string `yaml:"host"`
 	Port    int    `yaml:"port"`
 	Address string `yaml:"address"`
+}
+
+type DB struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Name     string `yaml:"dbname"`
 }
 
 var cfg Config

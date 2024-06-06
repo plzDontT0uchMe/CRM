@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"google.golang.org/grpc"
 	"net/http"
+	"strconv"
 )
 
 func AccessCheck(next http.Handler) http.Handler {
@@ -45,10 +46,34 @@ func AccessCheck(next http.Handler) http.Handler {
 
 		resp, _ := auth.CheckAuthorization(context.Background(), &authService.CheckAuthorizationRequest{AccessToken: session.AccessToken})
 
+		if resp == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      "AuthService is crashed",
+			})
+			w.Write(res)
+			logger.CreateLog("error", "error check authorization")
+			return
+		}
+
+		if !resp.Successfully {
+			w.WriteHeader(http.StatusUnauthorized)
+			res, _ := json.Marshal(map[string]any{
+				"successfully": false,
+				"message":      resp.Message,
+			})
+			w.Write(res)
+			logger.CreateLog("info", resp.Message)
+			return
+		}
+
 		logger.CreateLog("info", resp.Message)
 
-		if resp.Successfully {
-			next.ServeHTTP(w, r)
-		}
+		r.Header.Add("idAccount", strconv.FormatInt(resp.IdAccount, 10))
+		r.Header.Add("roleAccount", strconv.FormatInt(resp.RoleAccount, 10))
+		r.Header.Add("lastActivityAccount", resp.LastActivityAccount.AsTime().GoString())
+		r.Header.Add("dateCreatedAccount", resp.DateCreatedAccount.AsTime().GoString())
+		next.ServeHTTP(w, r)
 	})
 }

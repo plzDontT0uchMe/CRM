@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package storageService;
+option go_package = "/storageService";
+
+message UploadImageRequest {
+  bytes image = 1;
+  string format = 2;
+}
+
+message UploadImageResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+  string link = 4;
+}
+
+message GetImageRequest {
+  string linkImage = 1;
+}
+
+message GetImageResponse {
+  bytes image = 1;
+  bool successfully = 2;
+  string message = 3;
+  int64 httpStatus = 4;
+}
+
+service StorageService {
+  rpc UploadImage(UploadImageRequest) returns (UploadImageResponse);
+  rpc GetImage(GetImageRequest) returns (GetImageResponse);
+}

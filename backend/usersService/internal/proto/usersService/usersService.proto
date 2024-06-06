@@ -1,65 +1,54 @@
 syntax="proto3";
 
+package usersService;
+option go_package = "/usersService";
+
 import "google/protobuf/timestamp.proto";
 
-package authService;
-option go_package = "/authService";
-
-message AuthorizationRequest {
-  string login = 1;
-  string password = 2;
-}
-
-message AuthorizationResponse {
-  string accessToken = 1;
-  google.protobuf.Timestamp dateExpirationAccessToken = 2;
-  string refreshToken = 3;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
-  bool successfully = 5;
-  string message = 6;
-  int64 httpStatus = 7;
-}
-
 message RegistrationRequest {
-  string login = 1;
-  string password = 2;
+  int64 idAccount = 1;
 }
 
 message RegistrationResponse {
-  string accessToken = 1;
-  google.protobuf.Timestamp dateExpirationAccessToken = 2;
-  string refreshToken = 3;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
-  bool successfully = 5;
-  string message = 6;
-  int64 httpStatus = 7;
-}
-
-message CheckAuthorizationRequest {
-  string accessToken = 1;
-}
-
-message CheckAuthorizationResponse {
   bool successfully = 1;
   string message = 2;
   int64 httpStatus = 3;
 }
 
-message UpdateAccessTokenRequest {
-  string refreshToken = 1;
+message GetUserRequest {
+  int64 idAccount = 1;
 }
 
-message UpdateAccessTokenResponse {
+message GetUserResponse {
+  string name = 1;
+  string surname = 2;
+  string patronymic = 3;
+  int64 gender = 4;
+  google.protobuf.Timestamp dateBorn = 5;
+  string linkImage = 6;
+  bool successfully = 7;
+  string message = 8;
+  int64 httpStatus = 9;
+}
+
+message UpdateUserRequest {
+  int64 idAccount = 1;
+  string name = 2;
+  string surname = 3;
+  string patronymic = 4;
+  int64 gender = 5;
+  google.protobuf.Timestamp dateBorn = 6;
+  string linkImage = 7;
+}
+
+message UpdateUserResponse {
   bool successfully = 1;
   string message = 2;
   int64 httpStatus = 3;
-  string newAccessToken = 4;
-  google.protobuf.Timestamp newDateExpirationAccessToken = 5;
 }
 
-service AuthService {
-  rpc Authorization (AuthorizationRequest) returns (AuthorizationResponse) {}
+service UsersService {
   rpc Registration (RegistrationRequest) returns (RegistrationResponse) {}
-  rpc CheckAuthorization (CheckAuthorizationRequest) returns (CheckAuthorizationResponse) {}
-  rpc UpdateAccessToken (UpdateAccessTokenRequest) returns (UpdateAccessTokenResponse) {}
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {}
 }

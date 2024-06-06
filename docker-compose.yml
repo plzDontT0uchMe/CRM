@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+    api-gateway:
+        container_name: api-gateway
+        build: /backend/apiGateway
+        image: "plzdontt0uchme/crm-api-gateway:latest"
+        ports:
+            - "3000:3000"
+    auth-service:
+        container_name: auth-service
+        build: /backend/authService
+        image: "plzdontt0uchme/crm-auth-service:latest"
+        ports:
+            - "3001:3001"
+    users-service:
+        container_name: users-service
+        build: /backend/usersService
+        image: "plzdontt0uchme/crm-users-service:latest"
+        ports:
+            - "3002:3002"

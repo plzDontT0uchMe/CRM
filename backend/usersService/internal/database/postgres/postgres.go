@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"CRM/go/authService/internal/config"
-	"CRM/go/authService/internal/logger"
+	"CRM/go/usersService/internal/config"
+	"CRM/go/usersService/internal/logger"
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"

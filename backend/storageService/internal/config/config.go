@@ -7,12 +7,10 @@ import (
 )
 
 type Config struct {
-	Env          string  `yaml:"env"`
-	ApiGateway   Service `yaml:"api_gateway"`
-	AuthService  Service `yaml:"auth_service"`
-	UsersService Service `yaml:"users_service"`
-	Secret       string  `yaml:"secret"`
-	DB           DB      `yaml:"db"`
+	Env            string  `yaml:"env"`
+	ApiGateway     Service `yaml:"api_gateway"`
+	StorageService Service `yaml:"storage_service"`
+	DB             DB      `yaml:"db"`
 }
 
 type Service struct {

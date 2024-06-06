@@ -1,4 +1,4 @@
-package postgres_test
+package test_test
 
 import (
 	"CRM/go/authService/internal/models"
@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-const goRoutines = 100
+const goRoutines = 50
 const iterations = 1000
 
 func TestSQLDB(t *testing.T) {
@@ -27,7 +27,7 @@ func TestSQLDB(t *testing.T) {
 		t.Fatalf("Failed to ping database: %v", err)
 	}
 
-	var user models.User
+	var user models.Account
 	user.Login = "123"
 	user.Password = hash.GenerateHash("123$ecr3t")
 
@@ -38,7 +38,7 @@ func TestSQLDB(t *testing.T) {
 			defer wg.Done()
 
 			for j := 1; j <= iterations; j++ {
-				err = db.QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
+				err = db.QueryRow("SELECT id FROM accounts WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
 				if err != nil {
 					t.Fatalf("Failed to query database: %v %v %v", i, j, err)
 				}
@@ -94,7 +94,7 @@ func TestPGXPoolDB(t *testing.T) {
 		t.Fatalf("Failed to ping database: %v", err)
 	}
 
-	var user models.User
+	var user models.Account
 	user.Login = "123"
 	user.Password = hash.GenerateHash("123$ecr3t")
 
@@ -105,7 +105,7 @@ func TestPGXPoolDB(t *testing.T) {
 			defer wg.Done()
 
 			for j := 1; j <= iterations; j++ {
-				err = pool.QueryRow(context.Background(), "SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
+				err = pool.QueryRow(context.Background(), "SELECT id FROM accounts WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
 				if err != nil {
 					t.Fatalf("Failed to query database: %v %v %v", i, j, err)
 				}

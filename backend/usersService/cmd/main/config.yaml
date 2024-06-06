@@ -1,13 +1,15 @@
-env: "development"
+env: "production"
 api_gateway:
-    host: "localhost"
+    host: "193.169.105.90"
     port: 3000
-    address: "localhost:3000"
-auth_service:
-    host: "localhost"
-    port: 3001
-    address: "localhost:3001"
+    address: "193.169.105.90:3000"
 users_service:
-    host: "localhost"
+    host: "193.169.105.90"
     port: 3002
-    address: "localhost:3002"
+    address: "193.169.105.90:3002"
+db:
+    host: "193.169.105.90"
+    port: 5432
+    user: "postgres"
+    password: "0000"
+    dbname: "crm-usersService"

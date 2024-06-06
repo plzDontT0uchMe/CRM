@@ -5,6 +5,7 @@ import (
 	"CRM/go/authService/internal/handlers"
 	"CRM/go/authService/internal/logger"
 	"CRM/go/authService/internal/proto/authService"
+	"fmt"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -16,12 +17,16 @@ func main() {
 
 	authService.RegisterAuthServiceServer(g, srv)
 
-	l, err := net.Listen("tcp", config.GetConfig().HTTPServer.Address)
+	l, err := net.Listen("tcp", config.GetConfig().AuthService.Address)
 
 	if err != nil {
+		logger.CreateLog("error", err.Error())
 		return
 	}
 
-	logger.CreateLog("info", "starting server on "+config.GetConfig().HTTPServer.Address)
-	g.Serve(l)
+	logger.CreateLog("info", fmt.Sprintf("starting server on %v", config.GetConfig().AuthService.Address))
+	err = g.Serve(l)
+	if err != nil {
+		logger.CreateLog("error", err.Error())
+	}
 }

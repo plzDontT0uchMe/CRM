@@ -21,8 +21,10 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	AuthService_Authorization_FullMethodName      = "/authService.AuthService/Authorization"
 	AuthService_Registration_FullMethodName       = "/authService.AuthService/Registration"
+	AuthService_Logout_FullMethodName             = "/authService.AuthService/Logout"
 	AuthService_CheckAuthorization_FullMethodName = "/authService.AuthService/CheckAuthorization"
 	AuthService_UpdateAccessToken_FullMethodName  = "/authService.AuthService/UpdateAccessToken"
+	AuthService_GetUser_FullMethodName            = "/authService.AuthService/GetUser"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -31,8 +33,10 @@ const (
 type AuthServiceClient interface {
 	Authorization(ctx context.Context, in *AuthorizationRequest, opts ...grpc.CallOption) (*AuthorizationResponse, error)
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	CheckAuthorization(ctx context.Context, in *CheckAuthorizationRequest, opts ...grpc.CallOption) (*CheckAuthorizationResponse, error)
 	UpdateAccessToken(ctx context.Context, in *UpdateAccessTokenRequest, opts ...grpc.CallOption) (*UpdateAccessTokenResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -61,6 +65,15 @@ func (c *authServiceClient) Registration(ctx context.Context, in *RegistrationRe
 	return out, nil
 }
 
+func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+	out := new(LogoutResponse)
+	err := c.cc.Invoke(ctx, AuthService_Logout_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) CheckAuthorization(ctx context.Context, in *CheckAuthorizationRequest, opts ...grpc.CallOption) (*CheckAuthorizationResponse, error) {
 	out := new(CheckAuthorizationResponse)
 	err := c.cc.Invoke(ctx, AuthService_CheckAuthorization_FullMethodName, in, out, opts...)
@@ -79,14 +92,25 @@ func (c *authServiceClient) UpdateAccessToken(ctx context.Context, in *UpdateAcc
 	return out, nil
 }
 
+func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
 	Authorization(context.Context, *AuthorizationRequest) (*AuthorizationResponse, error)
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
+	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	CheckAuthorization(context.Context, *CheckAuthorizationRequest) (*CheckAuthorizationResponse, error)
 	UpdateAccessToken(context.Context, *UpdateAccessTokenRequest) (*UpdateAccessTokenResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -100,11 +124,17 @@ func (UnimplementedAuthServiceServer) Authorization(context.Context, *Authorizat
 func (UnimplementedAuthServiceServer) Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Registration not implemented")
 }
+func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
 func (UnimplementedAuthServiceServer) CheckAuthorization(context.Context, *CheckAuthorizationRequest) (*CheckAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckAuthorization not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateAccessToken(context.Context, *UpdateAccessTokenRequest) (*UpdateAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccessToken not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -155,6 +185,24 @@ func _AuthService_Registration_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_CheckAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckAuthorizationRequest)
 	if err := dec(in); err != nil {
@@ -191,6 +239,24 @@ func _AuthService_UpdateAccessToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,12 +273,20 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_Registration_Handler,
 		},
 		{
+			MethodName: "Logout",
+			Handler:    _AuthService_Logout_Handler,
+		},
+		{
 			MethodName: "CheckAuthorization",
 			Handler:    _AuthService_CheckAuthorization_Handler,
 		},
 		{
 			MethodName: "UpdateAccessToken",
 			Handler:    _AuthService_UpdateAccessToken_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _AuthService_GetUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

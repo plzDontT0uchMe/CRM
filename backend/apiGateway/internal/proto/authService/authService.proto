@@ -11,13 +11,17 @@ message AuthorizationRequest {
 }
 
 message AuthorizationResponse {
-  string accessToken = 1;
-  google.protobuf.Timestamp dateExpirationAccessToken = 2;
-  string refreshToken = 3;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
-  bool successfully = 5;
-  string message = 6;
-  int64 httpStatus = 7;
+  int64 idAccount = 1;
+  int64 role = 2;
+  google.protobuf.Timestamp lastActivity = 3;
+  google.protobuf.Timestamp dateCreated = 4;
+  string accessToken = 5;
+  google.protobuf.Timestamp dateExpirationAccessToken = 6;
+  string refreshToken = 7;
+  google.protobuf.Timestamp dateExpirationRefreshToken = 8;
+  bool successfully = 9;
+  string message = 10;
+  int64 httpStatus = 11;
 }
 
 message RegistrationRequest {
@@ -26,13 +30,27 @@ message RegistrationRequest {
 }
 
 message RegistrationResponse {
-  string accessToken = 1;
-  google.protobuf.Timestamp dateExpirationAccessToken = 2;
-  string refreshToken = 3;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 4;
-  bool successfully = 5;
-  string message = 6;
-  int64 httpStatus = 7;
+  int64 idAccount = 1;
+  int64 role = 2;
+  google.protobuf.Timestamp lastActivity = 3;
+  google.protobuf.Timestamp dateCreated = 4;
+  string accessToken = 5;
+  google.protobuf.Timestamp dateExpirationAccessToken = 6;
+  string refreshToken = 7;
+  google.protobuf.Timestamp dateExpirationRefreshToken = 8;
+  bool successfully = 9;
+  string message = 10;
+  int64 httpStatus = 11;
+}
+
+message LogoutRequest {
+  int64 idAccount = 1;
+}
+
+message LogoutResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
 }
 
 message CheckAuthorizationRequest {
@@ -43,6 +61,10 @@ message CheckAuthorizationResponse {
   bool successfully = 1;
   string message = 2;
   int64 httpStatus = 3;
+  int64 idAccount = 4;
+  int64 roleAccount = 5;
+  google.protobuf.Timestamp lastActivityAccount = 6;
+  google.protobuf.Timestamp dateCreatedAccount = 7;
 }
 
 message UpdateAccessTokenRequest {
@@ -57,9 +79,25 @@ message UpdateAccessTokenResponse {
   google.protobuf.Timestamp newDateExpirationAccessToken = 5;
 }
 
+message GetUserRequest {
+  int64 idAccount = 1;
+}
+
+message GetUserResponse {
+  int64 role = 1;
+  google.protobuf.Timestamp lastActivity = 2;
+  google.protobuf.Timestamp dateCreated = 3;
+  bool successfully = 4;
+  string message = 5;
+  int64 httpStatus = 6;
+}
+
+
 service AuthService {
   rpc Authorization (AuthorizationRequest) returns (AuthorizationResponse) {}
   rpc Registration (RegistrationRequest) returns (RegistrationResponse) {}
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {}
   rpc CheckAuthorization (CheckAuthorizationRequest) returns (CheckAuthorizationResponse) {}
   rpc UpdateAccessToken (UpdateAccessTokenRequest) returns (UpdateAccessTokenResponse) {}
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
 }

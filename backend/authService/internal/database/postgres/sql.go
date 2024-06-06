@@ -3,44 +3,87 @@ package postgres
 import (
 	"CRM/go/authService/internal/logger"
 	"CRM/go/authService/internal/models"
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
-func GetUser(user *models.User) (error, int) {
-	err := GetDB().QueryRow("SELECT id FROM users WHERE login = $1 AND password = $2 LIMIT 1", user.Login, user.Password).Scan(&user.Id)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.CreateLog("error", fmt.Sprintf("user not found: %v", err), "userLogin", user.Login)
-		return err, http.StatusBadRequest
-	}
+func GetAccountByLogin(account *models.Account) (error, int) {
+	err := GetDB().QueryRow(context.Background(), "SELECT id, role, last_activity, date_created FROM accounts WHERE login = $1 AND password = $2 LIMIT 1", account.Login, account.Password).Scan(&account.Id, &account.Role, &account.LastActivity, &account.DateCreated)
 
 	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("query error for user: %v", err), "userLogin", user.Login)
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.CreateLog("error", fmt.Sprintf("user not found: %v", err), "userLogin", account.Login)
+			return err, http.StatusBadRequest
+		}
+		logger.CreateLog("error", fmt.Sprintf("query error for user: %v", err), "userLogin", account.Login)
 		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
 }
 
-func CreateUser(user *models.User) (error, int) {
-	err := GetDB().QueryRow("INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id", user.Login, user.Password).Scan(&user.Id)
+func GetAccountById(account *models.Account) (error, int) {
+	err := GetDB().QueryRow(context.Background(), "SELECT login, password, role, last_activity, date_created FROM accounts WHERE id = $1 LIMIT 1", account.Id).Scan(&account.Login, &account.Password, &account.Role, &account.LastActivity, &account.DateCreated)
 
 	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userLogin", user.Login)
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.CreateLog("error", fmt.Sprintf("user not found: %v", err), "userId", account.Id)
+			return err, http.StatusBadRequest
+		}
+		logger.CreateLog("error", fmt.Sprintf("query error for user: %v", err), "userId", account.Id)
 		return err, http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
 }
 
-func RemoveAllSessionsByUser(user *models.User) (error, int) {
-	_, err := GetDB().Exec("DELETE FROM sessions WHERE id_user = $1", user.Id)
+func CreateAccount(account *models.Account) (error, int) {
+	err := GetDB().QueryRow(context.Background(), "INSERT INTO accounts (login, password, role, last_activity, date_created) VALUES ($1, $2, $3, $4, $5) RETURNING id", account.Login, account.Password, account.Role, account.LastActivity, account.DateCreated).Scan(&account.Id)
 
 	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", user.Id, "userLogin", user.Login)
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userLogin", account.Login)
+		return err, http.StatusInternalServerError
+	}
+
+	return nil, http.StatusOK
+}
+
+func GetRoleByAccountId(account *models.Account) (error, int) {
+	err := GetDB().QueryRow(context.Background(), "SELECT role FROM accounts WHERE id = $1", account.Id).Scan(account.Role)
+
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("error select role by userId: %v", err), "userId", account.Id)
+		return err, http.StatusInternalServerError
+	}
+
+	return nil, http.StatusOK
+}
+
+func DeleteSessionByAccountId(accountId int) (*string, error, int) {
+	var accessToken string
+	err := GetDB().QueryRow(context.Background(), "DELETE FROM sessions WHERE id_account = $1 RETURNING access_token", accountId).Scan(&accessToken)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.CreateLog("error", fmt.Sprintf("session not found: %v", err), "userId", accountId)
+			return nil, err, http.StatusUnauthorized
+		}
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", accountId)
+		return nil, err, http.StatusInternalServerError
+	}
+
+	return &accessToken, nil, http.StatusOK
+}
+
+func DeleteAllSessionsByAccount(account *models.Account) (error, int) {
+	_, err := GetDB().Exec(context.Background(), "DELETE FROM sessions WHERE id_account = $1", account.Id)
+
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", account.Id, "userLogin", account.Login)
 		return err, http.StatusInternalServerError
 	}
 
@@ -48,11 +91,11 @@ func RemoveAllSessionsByUser(user *models.User) (error, int) {
 }
 
 func CreateSession(session *models.Session) (error, int) {
-	_, err := GetDB().Exec("INSERT INTO sessions (id_user, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) VALUES ($1, $2, $3, $4, $5)",
-		session.UserId, session.AccessToken, session.DateExpirationAccessToken, session.RefreshToken, session.DateExpirationRefreshToken)
+	_, err := GetDB().Exec(context.Background(), "INSERT INTO sessions (id_account, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) VALUES ($1, $2, $3, $4, $5)",
+		session.IdAccount, session.AccessToken, session.DateExpirationAccessToken, session.RefreshToken, session.DateExpirationRefreshToken)
 
 	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", session.UserId)
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "userId", session.IdAccount)
 		return err, http.StatusInternalServerError
 	}
 
@@ -60,14 +103,13 @@ func CreateSession(session *models.Session) (error, int) {
 }
 
 func GetSessionByAccessToken(session *models.Session) (error, int) {
-	err := GetDB().QueryRow("SELECT id, date_expiration_access_token FROM sessions WHERE access_token = $1 LIMIT 1", session.AccessToken).Scan(&session.Id, &session.DateExpirationAccessToken)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
-		return err, http.StatusUnauthorized
-	}
+	err := GetDB().QueryRow(context.Background(), "SELECT id, id_account, date_expiration_access_token FROM sessions WHERE access_token = $1 LIMIT 1", session.AccessToken).Scan(&session.Id, &session.IdAccount, &session.DateExpirationAccessToken)
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
+			return err, http.StatusUnauthorized
+		}
 		logger.CreateLog("error", fmt.Sprintf("error binding JSON for session: %v", err))
 		return err, http.StatusInternalServerError
 	}
@@ -76,7 +118,7 @@ func GetSessionByAccessToken(session *models.Session) (error, int) {
 }
 
 func RemoveAccessTokenBySessionId(session *models.Session) (error, int) {
-	_, err := GetDB().Exec("UPDATE sessions SET access_token = NULL, date_expiration_access_token = NULL WHERE id = $1", session.Id)
+	_, err := GetDB().Exec(context.Background(), "UPDATE sessions SET access_token = NULL, date_expiration_access_token = NULL WHERE id = $1", session.Id)
 
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
@@ -87,14 +129,13 @@ func RemoveAccessTokenBySessionId(session *models.Session) (error, int) {
 }
 
 func GetSessionByRefreshToken(session *models.Session) (error, int) {
-	err := GetDB().QueryRow("SELECT id, date_expiration_refresh_token FROM sessions WHERE refresh_token = $1 LIMIT 1", session.RefreshToken).Scan(&session.Id, &session.DateExpirationRefreshToken)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
-		return err, http.StatusUnauthorized
-	}
+	err := GetDB().QueryRow(context.Background(), "SELECT id, id_account, date_expiration_refresh_token FROM sessions WHERE refresh_token = $1 LIMIT 1", session.RefreshToken).Scan(&session.Id, &session.IdAccount, &session.DateExpirationRefreshToken)
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.CreateLog("error", fmt.Sprintf("session not found: %v", err))
+			return err, http.StatusUnauthorized
+		}
 		logger.CreateLog("error", fmt.Sprintf("error binding JSON for session: %v", err))
 		return err, http.StatusInternalServerError
 	}
@@ -103,7 +144,7 @@ func GetSessionByRefreshToken(session *models.Session) (error, int) {
 }
 
 func RemoveSessionBySessionId(session *models.Session) (error, int) {
-	_, err := db.Exec("DELETE FROM sessions WHERE id = $1", session.Id)
+	_, err := GetDB().Exec(context.Background(), "DELETE FROM sessions WHERE id = $1", session.Id)
 
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
@@ -114,11 +155,22 @@ func RemoveSessionBySessionId(session *models.Session) (error, int) {
 }
 
 func UpdateAccessTokenByRefreshToken(session *models.Session) (error, int) {
-	_, err := GetDB().Exec("UPDATE sessions SET access_token = $1, date_expiration_access_token = $2 WHERE refresh_token = $3",
+	_, err := GetDB().Exec(context.Background(), "UPDATE sessions SET access_token = $1, date_expiration_access_token = $2 WHERE refresh_token = $3",
 		session.AccessToken, session.DateExpirationAccessToken, session.RefreshToken)
 
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err))
+		return err, http.StatusInternalServerError
+	}
+
+	return nil, http.StatusOK
+}
+
+func UpdateLastActivityByAccountId(idAccount int, lastActivity time.Time) (error, int) {
+	_, err := GetDB().Exec(context.Background(), "UPDATE accounts SET last_activity = $1 WHERE id = $2", lastActivity, idAccount)
+
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "idAccount", idAccount)
 		return err, http.StatusInternalServerError
 	}
 

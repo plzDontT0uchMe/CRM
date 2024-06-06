@@ -26,8 +26,29 @@ message GetUserResponse {
   int64 gender = 4;
   google.protobuf.Timestamp dateBorn = 5;
   string linkImage = 6;
+  bool successfully = 7;
+  string message = 8;
+  int64 httpStatus = 9;
+}
+
+message UpdateUserRequest {
+  int64 idAccount = 1;
+  string name = 2;
+  string surname = 3;
+  string patronymic = 4;
+  int64 gender = 5;
+  google.protobuf.Timestamp dateBorn = 6;
+  string linkImage = 7;
+}
+
+message UpdateUserResponse {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
 }
 
 service UsersService {
   rpc Registration (RegistrationRequest) returns (RegistrationResponse) {}
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {}
 }

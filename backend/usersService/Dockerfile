@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine
 WORKDIR /build
-COPY internal/config/config.yaml .
+COPY cmd/main/config.yaml .
 COPY . .
-RUN go build -o authService cmd/main/app.go
-CMD ["./authService"]
+RUN go build -o usersService cmd/main/app.go
+CMD ["./usersService"]
