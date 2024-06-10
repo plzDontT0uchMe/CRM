@@ -1,276 +1,198 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import ShowIcons from '@/components/icons/ShowIcons.vue'
-import HideIcons from '@/components/icons/HideIcons.vue'
-
-const password = ref('')
-const showPassword = ref(false)
-const router = useRouter()
-
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value
-}
-const navigateToReg = () => {
-  router.push('/reg')
-}
-</script>
-
 <template>
-  <div class="main">
-    <div class="container-auth">
-      <div class="container">
-        <div class="logo">
-          <p>Авторизация</p>
-        </div>
-
-        <div class="field-input">
-          <label class="input input-bordered flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="w-4 h-4 opacity-70"
-            >
-              <path
-                d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
-              />
-            </svg>
-            <input type="text" class="grow" placeholder="Login" />
-          </label>
-          <label class="input input-bordered flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="w-4 h-4 opacity-70"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <input
-              class="grow"
-              v-model="password"
-              :type="showPassword ? 'text' : 'password'"
-              placeholder="Password"
-            />
-          </label>
-          <button class="showHide" @click="togglePasswordVisibility">
-            <HideIcons v-if="showPassword" />
-            <ShowIcons v-else />
-          </button>
-        </div>
-
-        <div class="forgot-pass">
-          <div class="remember">
-            <input
-              class="input-checkbox"
-              type="checkbox"
-              id="remember"
-              name="Remember me"
-              placeholder="Remember me"
-            />
-            <label for="remember">Remember me</label>
-          </div>
-          <a class="for-got" href="#">Forgot password?</a>
-        </div>
-
-        <div class="link-reg">
-          <p>Dont have an account?</p>
-          <a @click="navigateToReg">Click here</a>
-        </div>
-        <div class="button">
-          <button class="button-auth btn btn-outline btn-secondary">Войти</button>
+  <div class="login-container">
+    <h1>Авторизация</h1>
+    <form @submit.prevent="handleSubmit">
+      <div class="form-group">
+        <label for="username">Login:</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <div class="password-input">
+          <input :type="passwordFieldType" id="password" v-model="password" required />
+          <font-awesome-icon
+            :icon="passwordFieldType === 'password' ? 'eye' : 'eye-slash'"
+            @click="togglePasswordVisibility"
+            class="password-icon"
+          />
         </div>
       </div>
+      <div class="form-group remember-me">
+        <input type="checkbox" id="remember-me" v-model="rememberMe" />
+        <label for="remember-me">Remember Me</label>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div class="links">
+      <a href="#" @click.prevent="forgotPassword">Forgot Password?</a>
+      <router-link to="/reg">I don't have an account, click here</router-link>
     </div>
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faEye, faEyeSlash)
+
+const username = ref('')
+const password = ref('')
+const rememberMe = ref(false)
+const errorMessage = ref('')
+const passwordFieldType = ref('password')
+
+const handleSubmit = async () => {
+  if (username.value && password.value) {
+    try {
+      const response = await fakeLogin(username.value, password.value)
+      if (response.success) {
+        alert('Login successful!')
+        if (rememberMe.value) {
+          localStorage.setItem('username', username.value)
+          localStorage.setItem('password', password.value)
+        }
+      } else {
+        errorMessage.value = 'Invalid username or password'
+      }
+    } catch (error) {
+      errorMessage.value = 'An error occurred. Please try again.'
+    }
+  } else {
+    errorMessage.value = 'Please fill in all fields.'
+  }
+}
+
+const togglePasswordVisibility = () => {
+  passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password'
+}
+
+const fakeLogin = (username, password) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (username === 'admin' && password === 'password') {
+        resolve({ success: true })
+      } else {
+        resolve({ success: false })
+      }
+    }, 1000)
+  })
+}
+
+const forgotPassword = () => {
+  alert('Forgot password link clicked')
+}
+
+const register = () => {
+  alert('Register link clicked')
+}
+</script>
+
 <style scoped>
-* {
-  font-family: Inter;
-}
-.main {
-  background-color: #16141c;
+.login-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  width: 100vw;
+  align-items: center;
   height: 100vh;
-  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.container-auth {
-  width: 50%;
-  padding: 5px;
-  border: 2px solid #fff;
-  border-radius: 10%;
-  display: block;
-  overflow: hidden;
-}
-.container {
-  margin: 5px 5px;
-  width: 100%;
-  position: relative;
-}
-.logo {
-  align-items: center;
-  overflow: hidden;
-}
-p {
-  color: white;
+h1 {
   text-align: center;
-  font-size: 1.5em;
-  margin-bottom: 2%;
+  margin-bottom: 20px;
 }
-.field-input {
-  width: 96%;
-  height: 100%;
-  position: relative;
-  align-items: center;
-}
-.input {
-  margin-top: 10px;
+
+form {
   width: 100%;
+  max-width: 400px;
 }
 
-.showHide {
-  outline: none;
-  border: none;
-  background: transparent;
-  position: absolute;
-  top: 78%;
-  right: 10px;
-  transform: translateY(-50%);
-}
-.forgot-pass {
-  width: 100%;
-  margin: 8px auto;
-  display: flex;
-}
-.forgot-pass a {
-  text-align: right;
-  font-size: 0.8em;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.for-got {
-  position: absolute;
-  top: 75%;
-  right: 10px;
-}
-
-.container input {
-  outline: none;
-  border: none;
-  font-size: 1em;
-  color: white;
-}
-input::placeholder {
-  justify-content: center;
-  color: white;
-  font-size: 1em;
-  vertical-align: middle;
-}
-input:focus {
-  color: white;
-}
-a {
+label {
   display: block;
-  text-align: left;
-  font-size: 1em;
-  text-decoration: none;
-  color: #fff;
+  margin-bottom: 5px;
 }
-a:hover {
-  color: #6e52f9;
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-.input-checkbox {
-  margin-right: 7px;
-  transform: scale(1.1);
-  justify-content: center;
+
+.password-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-.input-checkbox + label {
-  display: inline-block;
-  font-size: 0.8em;
-  color: #fff;
+
+.password-input input {
+  width: calc(100% - 40px);
+  border: none;
+  border-radius: 4px 0 0 4px;
+  padding-right: 40px;
+}
+
+.password-icon {
+  padding: 8px;
   cursor: pointer;
 }
-.link-reg {
-  margin-top: 2%;
-  display: flex;
-}
-.link-reg p {
-  font-size: 1em;
-}
-.button {
-  padding: 0 auto;
+
+button[type='submit'] {
   width: 100%;
-  margin: 0 auto;
+  padding: 10px;
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type='submit']:hover {
+  background-color: var(--button-hover-background-color);
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.remember-me input {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.links {
+  text-align: center;
   margin-top: 20px;
-  position: relative;
-}
-.button-auth {
-  color: #ffffff;
-  width: 70%;
-  position: absolute;
-  top: 100%;
-  left: 13%;
-  padding: 0.5em 2em;
-  margin: 0 auto;
-  font-size: 1em;
-  transform: translate(-50% -50%);
-}
-.button-auth:hover {
-  background-color: #6e52f9;
-  border-color: #6e52f9;
-  color: #fff;
 }
 
-@media (max-width: 1920px) {
-  .container-auth {
-    height: 40vh;
-    width: 20%;
-  }
+.links a {
+  display: block;
+  margin-bottom: 5px;
+  color: #007bff;
+  text-decoration: none;
 }
 
-@media (max-width: 1500px) {
-  .container-auth {
-    height: 40vh;
-    width: 25%;
-  }
+.links a:hover {
+  text-decoration: underline;
 }
-@media (max-width: 1200px) {
-  .container-auth {
-    height: 40vh;
-    width: 30%;
-  }
-}
-@media (max-width: 900px) {
-  .container-auth {
-    height: 40vh;
-    width: 35%;
-  }
-}
-@media (max-width: 660px) {
-  .container-auth {
-    height: 40vh;
-    width: 45%;
-  }
-}
-@media (max-width: 530px) {
-  .container-auth {
-    height: 40vh;
-    width: 60%;
-  }
-}
-@media (max-width: 480px) {
-  .container-auth {
-    height: 40vh;
-    width: 70%;
-  }
+
+.error {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
 }
 </style>
