@@ -4,7 +4,7 @@ import (
 	"CRM/go/authService/internal/config"
 	"CRM/go/authService/internal/database/postgres"
 	"CRM/go/authService/internal/logger"
-	"CRM/go/authService/internal/models"
+	"CRM/go/authService/internal/proto/authService"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -66,19 +66,23 @@ func handleExpiredKeys() {
 	for {
 		msg, err := ReceiveMessages()
 		if err != nil {
-			logger.CreateLog("error", fmt.Sprintf("error receiving message: %v", err), "message", msg)
+			logger.CreateLog("error", fmt.Sprintf("receiving message: %v", err), "message", msg)
 			continue
 		}
 		if msg[:4] == "exp:" {
-			var account models.Account
+			var account authService.Account
 			err = json.Unmarshal([]byte(Get(context.Background(), msg[4:]).Val()), &account)
 			if err != nil {
-				logger.CreateLog("error", fmt.Sprintf("error unmarshal account: %v", err), "account", account)
+				logger.CreateLog("error", fmt.Sprintf("unmarshal account: %v", err))
 			}
-			err, _ = postgres.UpdateLastActivityByAccountId(account.Id, account.LastActivity)
+
+			_, err = postgres.UpdateLastActivityByAccountId(&account)
+			if err != nil {
+				logger.CreateLog("error", fmt.Sprintf("update last activity, redis: %v", err))
+			}
 			Del(context.Background(), msg[4:])
 			if err != nil {
-				logger.CreateLog("error", fmt.Sprintf("error deleting key: %v", err), "key", msg[4:])
+				logger.CreateLog("error", fmt.Sprintf("deleting key: %v", err), "key", msg[4:])
 			}
 			logger.CreateLog("info", "key deleted", "key", msg[4:])
 		}

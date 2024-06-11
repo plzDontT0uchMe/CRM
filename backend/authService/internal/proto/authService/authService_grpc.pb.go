@@ -19,12 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_Authorization_FullMethodName      = "/authService.AuthService/Authorization"
-	AuthService_Registration_FullMethodName       = "/authService.AuthService/Registration"
-	AuthService_Logout_FullMethodName             = "/authService.AuthService/Logout"
-	AuthService_CheckAuthorization_FullMethodName = "/authService.AuthService/CheckAuthorization"
-	AuthService_UpdateAccessToken_FullMethodName  = "/authService.AuthService/UpdateAccessToken"
-	AuthService_GetUser_FullMethodName            = "/authService.AuthService/GetUser"
+	AuthService_Authorization_FullMethodName           = "/authService.AuthService/Authorization"
+	AuthService_Registration_FullMethodName            = "/authService.AuthService/Registration"
+	AuthService_Logout_FullMethodName                  = "/authService.AuthService/Logout"
+	AuthService_CheckAuthorization_FullMethodName      = "/authService.AuthService/CheckAuthorization"
+	AuthService_UpdateAccessToken_FullMethodName       = "/authService.AuthService/UpdateAccessToken"
+	AuthService_GetAccountByAccessToken_FullMethodName = "/authService.AuthService/GetAccountByAccessToken"
+	AuthService_GetAccountById_FullMethodName          = "/authService.AuthService/GetAccountById"
+	AuthService_GetAccounts_FullMethodName             = "/authService.AuthService/GetAccounts"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -36,7 +38,9 @@ type AuthServiceClient interface {
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	CheckAuthorization(ctx context.Context, in *CheckAuthorizationRequest, opts ...grpc.CallOption) (*CheckAuthorizationResponse, error)
 	UpdateAccessToken(ctx context.Context, in *UpdateAccessTokenRequest, opts ...grpc.CallOption) (*UpdateAccessTokenResponse, error)
-	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetAccountByAccessToken(ctx context.Context, in *GetAccountByAccessTokenRequest, opts ...grpc.CallOption) (*GetAccountByAccessTokenResponse, error)
+	GetAccountById(ctx context.Context, in *GetAccountByIdRequest, opts ...grpc.CallOption) (*GetAccountByIdResponse, error)
+	GetAccounts(ctx context.Context, in *GetAccountsRequest, opts ...grpc.CallOption) (*GetAccountsResponse, error)
 }
 
 type authServiceClient struct {
@@ -92,9 +96,27 @@ func (c *authServiceClient) UpdateAccessToken(ctx context.Context, in *UpdateAcc
 	return out, nil
 }
 
-func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
-	err := c.cc.Invoke(ctx, AuthService_GetUser_FullMethodName, in, out, opts...)
+func (c *authServiceClient) GetAccountByAccessToken(ctx context.Context, in *GetAccountByAccessTokenRequest, opts ...grpc.CallOption) (*GetAccountByAccessTokenResponse, error) {
+	out := new(GetAccountByAccessTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetAccountByAccessToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetAccountById(ctx context.Context, in *GetAccountByIdRequest, opts ...grpc.CallOption) (*GetAccountByIdResponse, error) {
+	out := new(GetAccountByIdResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetAccountById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetAccounts(ctx context.Context, in *GetAccountsRequest, opts ...grpc.CallOption) (*GetAccountsResponse, error) {
+	out := new(GetAccountsResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetAccounts_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +132,9 @@ type AuthServiceServer interface {
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	CheckAuthorization(context.Context, *CheckAuthorizationRequest) (*CheckAuthorizationResponse, error)
 	UpdateAccessToken(context.Context, *UpdateAccessTokenRequest) (*UpdateAccessTokenResponse, error)
-	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	GetAccountByAccessToken(context.Context, *GetAccountByAccessTokenRequest) (*GetAccountByAccessTokenResponse, error)
+	GetAccountById(context.Context, *GetAccountByIdRequest) (*GetAccountByIdResponse, error)
+	GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -133,8 +157,14 @@ func (UnimplementedAuthServiceServer) CheckAuthorization(context.Context, *Check
 func (UnimplementedAuthServiceServer) UpdateAccessToken(context.Context, *UpdateAccessTokenRequest) (*UpdateAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccessToken not implemented")
 }
-func (UnimplementedAuthServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+func (UnimplementedAuthServiceServer) GetAccountByAccessToken(context.Context, *GetAccountByAccessTokenRequest) (*GetAccountByAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountByAccessToken not implemented")
+}
+func (UnimplementedAuthServiceServer) GetAccountById(context.Context, *GetAccountByIdRequest) (*GetAccountByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountById not implemented")
+}
+func (UnimplementedAuthServiceServer) GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccounts not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -239,20 +269,56 @@ func _AuthService_UpdateAccessToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserRequest)
+func _AuthService_GetAccountByAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountByAccessTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).GetUser(ctx, in)
+		return srv.(AuthServiceServer).GetAccountByAccessToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_GetUser_FullMethodName,
+		FullMethod: AuthService_GetAccountByAccessToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetUser(ctx, req.(*GetUserRequest))
+		return srv.(AuthServiceServer).GetAccountByAccessToken(ctx, req.(*GetAccountByAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetAccountById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetAccountById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetAccountById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetAccountById(ctx, req.(*GetAccountByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetAccounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetAccounts(ctx, req.(*GetAccountsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -285,8 +351,16 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_UpdateAccessToken_Handler,
 		},
 		{
-			MethodName: "GetUser",
-			Handler:    _AuthService_GetUser_Handler,
+			MethodName: "GetAccountByAccessToken",
+			Handler:    _AuthService_GetAccountByAccessToken_Handler,
+		},
+		{
+			MethodName: "GetAccountById",
+			Handler:    _AuthService_GetAccountById_Handler,
+		},
+		{
+			MethodName: "GetAccounts",
+			Handler:    _AuthService_GetAccounts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

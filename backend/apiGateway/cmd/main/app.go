@@ -23,10 +23,21 @@ func main() {
 	mux.Handle("/api/getUser/", accessCheck.AccessCheck(handlers.GetUserById()))
 	mux.Handle("/api/updateUser", accessCheck.AccessCheck(handlers.UpdateUser()))
 	mux.HandleFunc("/api/getImage/", handlers.GetImage)
+	mux.HandleFunc("/api/getTrainers", handlers.GetTrainers)
+	mux.HandleFunc("/api/getExercises", handlers.GetExercises)
+	mux.HandleFunc("/api/getExercise/", handlers.GetExerciseById)
+	mux.Handle("/api/createProgram", accessCheck.AccessCheck(handlers.CreateProgram()))
+	mux.Handle("/api/getPrograms", accessCheck.AccessCheck(handlers.GetProgramsByUserId()))
+	mux.HandleFunc("/api/getSubs", handlers.GetSubscriptions)
+	mux.Handle("/api/changeSub", accessCheck.AccessCheck(handlers.ChangeSubscription()))
 	mux.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Hello world!"))
 	})
+	mux.Handle("/api/check", accessCheck.AccessCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Check"))
+	})))
 
 	handler := logging.Logging(mux)
 	handler = cors.CORS(handler)

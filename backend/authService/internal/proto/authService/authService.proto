@@ -5,93 +5,99 @@ import "google/protobuf/timestamp.proto";
 package authService;
 option go_package = "/authService";
 
+message Account {
+  int64 id = 1;
+  string login = 2;
+  string password = 3;
+  google.protobuf.Timestamp lastActivity = 5;
+  google.protobuf.Timestamp dateCreated = 6;
+}
+
+message Session {
+  int64 id = 1;
+  int64 idAccount = 2;
+  string accessToken = 3;
+  google.protobuf.Timestamp dateExpirationAccessToken = 4;
+  string refreshToken = 5;
+  google.protobuf.Timestamp dateExpirationRefreshToken = 6;
+}
+
+message Status {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+}
+
 message AuthorizationRequest {
-  string login = 1;
-  string password = 2;
+  Account account = 1;
 }
 
 message AuthorizationResponse {
-  int64 idAccount = 1;
-  int64 role = 2;
-  google.protobuf.Timestamp lastActivity = 3;
-  google.protobuf.Timestamp dateCreated = 4;
-  string accessToken = 5;
-  google.protobuf.Timestamp dateExpirationAccessToken = 6;
-  string refreshToken = 7;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 8;
-  bool successfully = 9;
-  string message = 10;
-  int64 httpStatus = 11;
+  Session session = 1;
+  Status status = 2;
 }
 
 message RegistrationRequest {
-  string login = 1;
-  string password = 2;
+  Account account = 1;
 }
 
 message RegistrationResponse {
-  int64 idAccount = 1;
-  int64 role = 2;
-  google.protobuf.Timestamp lastActivity = 3;
-  google.protobuf.Timestamp dateCreated = 4;
-  string accessToken = 5;
-  google.protobuf.Timestamp dateExpirationAccessToken = 6;
-  string refreshToken = 7;
-  google.protobuf.Timestamp dateExpirationRefreshToken = 8;
-  bool successfully = 9;
-  string message = 10;
-  int64 httpStatus = 11;
+  Account account = 1;
+  Session session = 2;
+  Status status = 3;
 }
 
 message LogoutRequest {
-  int64 idAccount = 1;
+  Session session = 1;
 }
 
 message LogoutResponse {
-  bool successfully = 1;
-  string message = 2;
-  int64 httpStatus = 3;
+  Status status = 1;
 }
 
 message CheckAuthorizationRequest {
-  string accessToken = 1;
+  Session session = 1;
 }
 
 message CheckAuthorizationResponse {
-  bool successfully = 1;
-  string message = 2;
-  int64 httpStatus = 3;
-  int64 idAccount = 4;
-  int64 roleAccount = 5;
-  google.protobuf.Timestamp lastActivityAccount = 6;
-  google.protobuf.Timestamp dateCreatedAccount = 7;
+  Status status = 2;
 }
 
 message UpdateAccessTokenRequest {
-  string refreshToken = 1;
+  Session session = 1;
 }
 
 message UpdateAccessTokenResponse {
-  bool successfully = 1;
-  string message = 2;
-  int64 httpStatus = 3;
-  string newAccessToken = 4;
-  google.protobuf.Timestamp newDateExpirationAccessToken = 5;
+  Session session = 1;
+  Status status = 2;
 }
 
-message GetUserRequest {
-  int64 idAccount = 1;
+message GetAccountByAccessTokenRequest {
+  Session session = 1;
 }
 
-message GetUserResponse {
-  int64 role = 1;
-  google.protobuf.Timestamp lastActivity = 2;
-  google.protobuf.Timestamp dateCreated = 3;
-  bool successfully = 4;
-  string message = 5;
-  int64 httpStatus = 6;
+message GetAccountByAccessTokenResponse {
+  Account account = 1;
+  Status status = 2;
 }
 
+message GetAccountByIdRequest {
+  Account account = 1;
+}
+
+message GetAccountByIdResponse {
+  Account account = 1;
+  Status status = 2;
+}
+
+message GetAccountsRequest {
+  repeated int64 id = 1;
+}
+
+message GetAccountsResponse {
+  map<int64, Account> accounts = 1;
+  Status status = 2;
+}
 
 service AuthService {
   rpc Authorization (AuthorizationRequest) returns (AuthorizationResponse) {}
@@ -99,5 +105,7 @@ service AuthService {
   rpc Logout (LogoutRequest) returns (LogoutResponse) {}
   rpc CheckAuthorization (CheckAuthorizationRequest) returns (CheckAuthorizationResponse) {}
   rpc UpdateAccessToken (UpdateAccessTokenRequest) returns (UpdateAccessTokenResponse) {}
-  rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
+  rpc GetAccountByAccessToken (GetAccountByAccessTokenRequest) returns (GetAccountByAccessTokenResponse) {}
+  rpc GetAccountById (GetAccountByIdRequest) returns (GetAccountByIdResponse) {}
+  rpc GetAccounts (GetAccountsRequest) returns (GetAccountsResponse) {}
 }

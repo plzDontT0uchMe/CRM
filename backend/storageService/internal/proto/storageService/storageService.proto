@@ -3,27 +3,29 @@ syntax = "proto3";
 package storageService;
 option go_package = "/storageService";
 
-message RegistrationRequest {
-  int64 idAccount = 1;
-}
-
-message RegistrationResponse {
+message Status {
   bool successfully = 1;
   string message = 2;
   int64 httpStatus = 3;
 }
 
+message RegistrationRequest {
+  int64 id = 1;
+}
+
+message RegistrationResponse {
+  Status status = 1;
+}
+
 message UploadImageRequest {
-  int64 idAccount = 1;
+  int64 id = 1;
   bytes image = 2;
   string format = 3;
 }
 
 message UploadImageResponse {
-  bool successfully = 1;
-  string message = 2;
-  int64 httpStatus = 3;
-  string link = 4;
+  Status status = 1;
+  string link = 2;
 }
 
 message GetImageRequest {
@@ -32,20 +34,25 @@ message GetImageRequest {
 
 message GetImageResponse {
   bytes image = 1;
-  bool successfully = 2;
-  string message = 3;
-  int64 httpStatus = 4;
+  Status status = 2;
 }
 
 message GetLinkByIdAccountRequest {
-  int64 idAccount = 1;
+  int64 id = 1;
 }
 
 message GetLinkByIdAccountResponse {
   string link = 1;
-  bool successfully = 2;
-  string message = 3;
-  int64 httpStatus = 4;
+  Status status = 2;
+}
+
+message GetLinksByIdAccountsRequest {
+  repeated int64 id = 1;
+}
+
+message GetLinksByIdAccountsResponse {
+  map<int64, string> links = 1;
+  Status status = 2;
 }
 
 service StorageService {
@@ -53,4 +60,5 @@ service StorageService {
   rpc UploadImage(UploadImageRequest) returns (UploadImageResponse);
   rpc GetImage(GetImageRequest) returns (GetImageResponse);
   rpc GetLinkByIdAccount(GetLinkByIdAccountRequest) returns (GetLinkByIdAccountResponse);
+  rpc GetLinksByIdAccounts(GetLinksByIdAccountsRequest) returns (GetLinksByIdAccountsResponse);
 }

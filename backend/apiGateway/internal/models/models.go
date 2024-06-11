@@ -4,33 +4,50 @@ import (
 	"time"
 )
 
-type Account struct {
-	Id           int       `json:"id"`
-	Login        string    `json:"login"`
-	Password     string    `json:"password"`
-	Role         int       `json:"role"`
-	LastActivity time.Time `json:"last_activity"`
-	DateCreated  time.Time `json:"date_created"`
+type Program struct {
+	ID          int        `json:"id"`
+	IDCreator   int        `json:"idCreator"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Exercises   []Exercise `json:"exercises"`
+}
+
+type Exercise struct {
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
+	Video       string    `json:"video,omitempty"`
+	Muscles     *[]string `json:"muscles,omitempty"`
+}
+
+type TrainersInfo struct {
+	Exp          int    `json:"exp"`
+	Sport        string `json:"sport"`
+	Achievements string `json:"achievements"`
+}
+
+type Subscription struct {
+	ID             int      `json:"id"`
+	Name           string   `json:"name"`
+	Price          float32  `json:"price"`
+	Description    string   `json:"description"`
+	Possibilities  []string `json:"possibilities"`
+	Trainer        *User    `json:"trainer,omitempty"`
+	DateExpiration string   `json:"dateExpiration,omitempty"`
 }
 
 type User struct {
-	ID           int       `json:"id"`
-	Role         int       `json:"role"`
-	LastActivity time.Time `json:"lastActivity"`
-	DateCreated  time.Time `json:"dateCreated"`
-	Name         string    `json:"name"`
-	Patronymic   string    `json:"patronymic"`
-	Surname      string    `json:"surname"`
-	Gender       int       `json:"gender"`
-	DateBorn     string    `json:"dateBorn"`
-	Image        string    `json:"image"`
-}
-
-type Session struct {
-	Id                         int       `json:"id"`
-	IdAccount                  int       `json:"id_account"`
-	AccessToken                string    `json:"access_token"`
-	DateExpirationAccessToken  time.Time `json:"date_expiration_access_token"`
-	RefreshToken               string    `json:"refresh_token"`
-	DateExpirationRefreshToken time.Time `json:"date_expiration_refresh_token"`
+	ID           int            `json:"id,omitempty"`
+	LastActivity time.Time      `json:"lastActivity,omitempty"`
+	DateCreated  time.Time      `json:"dateCreated,omitempty"`
+	Name         string         `json:"name"`
+	Surname      string         `json:"surname"`
+	Patronymic   string         `json:"patronymic"`
+	Gender       int            `json:"gender"`
+	DateBorn     string         `json:"dateBorn"`
+	Image        string         `json:"image"`
+	Position     string         `json:"position"`
+	TrainerInfo  []TrainersInfo `json:"trainerInfo,omitempty"`
+	Subscription *Subscription  `json:"subscription,omitempty"`
 }

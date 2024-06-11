@@ -15,3 +15,11 @@ storage_service:
     host: "193.169.105.90"
     port: 3003
     address: "193.169.105.90:3003"
+subs_service:
+    host: "193.169.105.90"
+    port: 3004
+    address: "193.169.105.90:3004"
+training_service:
+    host: "193.169.105.90"
+    port: 3005
+    address: "193.169.105.90:3005"

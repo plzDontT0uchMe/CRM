@@ -1,52 +1,68 @@
-syntax="proto3";
+syntax = "proto3";
 
 package usersService;
 option go_package = "/usersService";
 
 import "google/protobuf/timestamp.proto";
 
-message RegistrationRequest {
-  int64 idAccount = 1;
-}
-
-message RegistrationResponse {
-  bool successfully = 1;
-  string message = 2;
-  int64 httpStatus = 3;
-}
-
-message GetUserRequest {
-  int64 idAccount = 1;
-}
-
-message GetUserResponse {
-  string name = 1;
-  string surname = 2;
-  string patronymic = 3;
-  int64 gender = 4;
-  google.protobuf.Timestamp dateBorn = 5;
-  bool successfully = 6;
-  string message = 7;
-  int64 httpStatus = 8;
-}
-
-message UpdateUserRequest {
-  int64 idAccount = 1;
+message User {
+  int64 id = 1;
   string name = 2;
   string surname = 3;
   string patronymic = 4;
   int64 gender = 5;
   google.protobuf.Timestamp dateBorn = 6;
+  string position = 7;
+  repeated TrainerInfo trainerInfo = 8;
 }
 
-message UpdateUserResponse {
+message TrainerInfo{
+  int64 exp = 1;
+  string sport = 2;
+  string achievements = 3;
+}
+
+message Status {
   bool successfully = 1;
   string message = 2;
   int64 httpStatus = 3;
 }
 
+message RegistrationRequest {
+  int64 id = 1;
+}
+
+message RegistrationResponse {
+  Status status = 1;
+}
+
+message GetUserRequest {
+  repeated int64 id = 1;
+}
+
+message GetUserResponse {
+  map<int64, User> user = 1;
+  Status status = 2;
+}
+
+message GetTrainersRequest {}
+
+message GetTrainersResponse {
+  repeated User users = 1;
+  Status status = 2;
+}
+
+message UpdateUserRequest {
+  User user = 1;
+}
+
+message UpdateUserResponse {
+  Status status = 1;
+}
+
 service UsersService {
   rpc Registration (RegistrationRequest) returns (RegistrationResponse) {}
   rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
+  rpc GetTrainers (GetTrainersRequest) returns (GetTrainersResponse) {}
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {}
 }

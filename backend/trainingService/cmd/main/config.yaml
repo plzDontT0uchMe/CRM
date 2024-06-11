@@ -1,0 +1,15 @@
+env: "production"
+api_gateway:
+    host: "193.169.105.90"
+    port: 3000
+    address: "193.169.105.90:3000"
+training_service:
+    host: "193.169.105.90"
+    port: 3005
+    address: "193.169.105.90:3001"
+db:
+    host: "193.169.105.90"
+    port: 5432
+    user: "postgres"
+    password: "0000"
+    dbname: "crm-trainingService"

@@ -4,77 +4,72 @@ import (
 	"CRM/go/authService/internal/proto/authService"
 	"CRM/go/authService/internal/service"
 	"golang.org/x/net/context"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Server struct {
 	authService.UnimplementedAuthServiceServer
 }
 
-func (s *Server) Authorization(ctx context.Context, authorizationRequest *authService.AuthorizationRequest) (*authService.AuthorizationResponse, error) {
-	account, err, httpStatus := service.AuthorizeAccount(authorizationRequest)
-	if err != nil {
-		return &authService.AuthorizationResponse{Successfully: false, Message: "error authorization user", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) Authorization(ctx context.Context, request *authService.AuthorizationRequest) (*authService.AuthorizationResponse, error) {
+	response := &authService.AuthorizationResponse{}
 
-	err, httpStatus = service.DeleteAllSessionsByAccount(account)
-	if err != nil {
-		return &authService.AuthorizationResponse{Successfully: false, Message: "error removing all sessions by user", HttpStatus: int64(httpStatus)}, nil
-	}
+	service.Authorization(request, response)
 
-	session, err, httpStatus := service.CreateSession(account)
-	if err != nil {
-		return &authService.AuthorizationResponse{Successfully: false, Message: "error creating session", HttpStatus: int64(httpStatus)}, nil
-	}
-
-	return &authService.AuthorizationResponse{Successfully: true, Message: "authorization successfully", HttpStatus: int64(httpStatus), IdAccount: int64(account.Id), Role: int64(account.Role), LastActivity: timestamppb.New(account.LastActivity), DateCreated: timestamppb.New(account.DateCreated), AccessToken: session.AccessToken, DateExpirationAccessToken: timestamppb.New(session.DateExpirationAccessToken), RefreshToken: session.RefreshToken, DateExpirationRefreshToken: timestamppb.New(session.DateExpirationRefreshToken)}, nil
+	return response, nil
 }
 
-func (s *Server) Registration(ctx context.Context, registrationRequest *authService.RegistrationRequest) (*authService.RegistrationResponse, error) {
-	account, err, httpStatus := service.RegisterAccount(registrationRequest)
-	if err != nil {
-		return &authService.RegistrationResponse{Successfully: false, Message: "error registering user", HttpStatus: int64(httpStatus)}, nil
-	}
-	session, err, httpStatus := service.CreateSession(account)
-	if err != nil {
-		return &authService.RegistrationResponse{Successfully: false, Message: "error creating session", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) Registration(ctx context.Context, request *authService.RegistrationRequest) (*authService.RegistrationResponse, error) {
+	response := &authService.RegistrationResponse{}
 
-	return &authService.RegistrationResponse{Successfully: true, Message: "registration successfully", HttpStatus: int64(httpStatus), IdAccount: int64(account.Id), Role: int64(account.Role), LastActivity: timestamppb.New(account.LastActivity), DateCreated: timestamppb.New(account.DateCreated), AccessToken: session.AccessToken, DateExpirationAccessToken: timestamppb.New(session.DateExpirationAccessToken), RefreshToken: session.RefreshToken, DateExpirationRefreshToken: timestamppb.New(session.DateExpirationRefreshToken)}, nil
+	service.CreateAccount(request, response)
+
+	return response, nil
 }
 
-func (s *Server) Logout(ctx context.Context, logoutRequest *authService.LogoutRequest) (*authService.LogoutResponse, error) {
-	err, httpStatus := service.Logout(logoutRequest)
-	if err != nil {
-		return &authService.LogoutResponse{Successfully: false, Message: "error logout", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) Logout(ctx context.Context, request *authService.LogoutRequest) (*authService.LogoutResponse, error) {
+	response := &authService.LogoutResponse{}
 
-	return &authService.LogoutResponse{Successfully: true, Message: "logout successfully", HttpStatus: int64(httpStatus)}, nil
+	service.Logout(request, response)
+
+	return response, nil
 }
 
-func (s *Server) CheckAuthorization(ctx context.Context, checkAuthorizationRequest *authService.CheckAuthorizationRequest) (*authService.CheckAuthorizationResponse, error) {
-	account, err, httpStatus := service.CheckAuthorization(checkAuthorizationRequest)
-	if err != nil {
-		return &authService.CheckAuthorizationResponse{Successfully: false, Message: "authorization failed", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) CheckAuthorization(ctx context.Context, request *authService.CheckAuthorizationRequest) (*authService.CheckAuthorizationResponse, error) {
+	response := &authService.CheckAuthorizationResponse{}
 
-	return &authService.CheckAuthorizationResponse{Successfully: true, Message: "authorization successfully", HttpStatus: int64(httpStatus), IdAccount: int64(account.Id), RoleAccount: int64(account.Role), LastActivityAccount: timestamppb.New(account.LastActivity), DateCreatedAccount: timestamppb.New(account.DateCreated)}, nil
+	service.CheckAuthorization(request, response)
+
+	return response, nil
 }
 
-func (s *Server) UpdateAccessToken(ctx context.Context, updateAccessTokenRequest *authService.UpdateAccessTokenRequest) (*authService.UpdateAccessTokenResponse, error) {
-	session, err, httpStatus := service.UpdateAccessToken(updateAccessTokenRequest)
-	if err != nil {
-		return &authService.UpdateAccessTokenResponse{Successfully: false, Message: "error updating access token", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) UpdateAccessToken(ctx context.Context, request *authService.UpdateAccessTokenRequest) (*authService.UpdateAccessTokenResponse, error) {
+	response := &authService.UpdateAccessTokenResponse{}
 
-	return &authService.UpdateAccessTokenResponse{Successfully: true, Message: "access token updated successfully", HttpStatus: int64(httpStatus), NewAccessToken: session.AccessToken, NewDateExpirationAccessToken: timestamppb.New(session.DateExpirationAccessToken)}, nil
+	service.UpdateAccessToken(request, response)
+
+	return response, nil
 }
 
-func (s *Server) GetUser(ctx context.Context, getUserRequest *authService.GetUserRequest) (*authService.GetUserResponse, error) {
-	account, err, httpStatus := service.GetUser(getUserRequest)
-	if err != nil {
-		return &authService.GetUserResponse{Successfully: false, Message: "error getting user", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) GetAccountByAccessToken(ctx context.Context, request *authService.GetAccountByAccessTokenRequest) (*authService.GetAccountByAccessTokenResponse, error) {
+	response := &authService.GetAccountByAccessTokenResponse{}
 
-	return &authService.GetUserResponse{Successfully: true, Message: "getting user successfully", HttpStatus: int64(httpStatus), Role: int64(account.Role), LastActivity: timestamppb.New(account.LastActivity), DateCreated: timestamppb.New(account.DateCreated)}, nil
+	service.GetAccount(request, response)
+
+	return response, nil
+}
+
+func (s *Server) GetAccountById(ctx context.Context, request *authService.GetAccountByIdRequest) (*authService.GetAccountByIdResponse, error) {
+	response := &authService.GetAccountByIdResponse{}
+
+	service.GetAccountById(request, response)
+
+	return response, nil
+}
+
+func (s *Server) GetAccounts(ctx context.Context, request *authService.GetAccountsRequest) (*authService.GetAccountsResponse, error) {
+	response := &authService.GetAccountsResponse{}
+
+	service.GetAccounts(request, response)
+
+	return response, nil
 }

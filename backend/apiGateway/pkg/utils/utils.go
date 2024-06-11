@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"fmt"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
@@ -8,9 +9,32 @@ import (
 	"time"
 )
 
+func ConvertArrayStringToArraySQLNullString(array []string) []sql.NullString {
+	var result []sql.NullString
+	for _, item := range array {
+		result = append(result, sql.NullString{String: item, Valid: true})
+	}
+	return result
+}
+
 func ConvertTimestampToNullString(timestamp *timestamppb.Timestamp) string {
 	if timestamp.IsValid() {
 		return time.Unix(timestamp.GetSeconds(), 0).Format("2006-01-02")
+	}
+	return ""
+}
+
+func ConvertStringToNullInt64(s string) int64 {
+	result, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return result
+}
+
+func ConvertTimestampToNullStringFull(timestamp *timestamppb.Timestamp) string {
+	if timestamp.IsValid() {
+		return time.Unix(timestamp.GetSeconds(), 0).Format("2006-01-02 15:04:05")
 	}
 	return ""
 }

@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	UsersService_Registration_FullMethodName = "/usersService.UsersService/Registration"
 	UsersService_GetUser_FullMethodName      = "/usersService.UsersService/GetUser"
+	UsersService_GetTrainers_FullMethodName  = "/usersService.UsersService/GetTrainers"
 	UsersService_UpdateUser_FullMethodName   = "/usersService.UsersService/UpdateUser"
 )
 
@@ -30,6 +31,7 @@ const (
 type UsersServiceClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetTrainers(ctx context.Context, in *GetTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
@@ -59,6 +61,15 @@ func (c *usersServiceClient) GetUser(ctx context.Context, in *GetUserRequest, op
 	return out, nil
 }
 
+func (c *usersServiceClient) GetTrainers(ctx context.Context, in *GetTrainersRequest, opts ...grpc.CallOption) (*GetTrainersResponse, error) {
+	out := new(GetTrainersResponse)
+	err := c.cc.Invoke(ctx, UsersService_GetTrainers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *usersServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
 	out := new(UpdateUserResponse)
 	err := c.cc.Invoke(ctx, UsersService_UpdateUser_FullMethodName, in, out, opts...)
@@ -74,6 +85,7 @@ func (c *usersServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReque
 type UsersServiceServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	GetTrainers(context.Context, *GetTrainersRequest) (*GetTrainersResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	mustEmbedUnimplementedUsersServiceServer()
 }
@@ -87,6 +99,9 @@ func (UnimplementedUsersServiceServer) Registration(context.Context, *Registrati
 }
 func (UnimplementedUsersServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUsersServiceServer) GetTrainers(context.Context, *GetTrainersRequest) (*GetTrainersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTrainers not implemented")
 }
 func (UnimplementedUsersServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
@@ -140,6 +155,24 @@ func _UsersService_GetUser_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UsersService_GetTrainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTrainersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServiceServer).GetTrainers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UsersService_GetTrainers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServiceServer).GetTrainers(ctx, req.(*GetTrainersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UsersService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateUserRequest)
 	if err := dec(in); err != nil {
@@ -172,6 +205,10 @@ var UsersService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUser",
 			Handler:    _UsersService_GetUser_Handler,
+		},
+		{
+			MethodName: "GetTrainers",
+			Handler:    _UsersService_GetTrainers_Handler,
 		},
 		{
 			MethodName: "UpdateUser",

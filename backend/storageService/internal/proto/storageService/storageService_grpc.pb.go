@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	StorageService_Registration_FullMethodName       = "/storageService.StorageService/Registration"
-	StorageService_UploadImage_FullMethodName        = "/storageService.StorageService/UploadImage"
-	StorageService_GetImage_FullMethodName           = "/storageService.StorageService/GetImage"
-	StorageService_GetLinkByIdAccount_FullMethodName = "/storageService.StorageService/GetLinkByIdAccount"
+	StorageService_Registration_FullMethodName         = "/storageService.StorageService/Registration"
+	StorageService_UploadImage_FullMethodName          = "/storageService.StorageService/UploadImage"
+	StorageService_GetImage_FullMethodName             = "/storageService.StorageService/GetImage"
+	StorageService_GetLinkByIdAccount_FullMethodName   = "/storageService.StorageService/GetLinkByIdAccount"
+	StorageService_GetLinksByIdAccounts_FullMethodName = "/storageService.StorageService/GetLinksByIdAccounts"
 )
 
 // StorageServiceClient is the client API for StorageService service.
@@ -33,6 +34,7 @@ type StorageServiceClient interface {
 	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error)
 	GetImage(ctx context.Context, in *GetImageRequest, opts ...grpc.CallOption) (*GetImageResponse, error)
 	GetLinkByIdAccount(ctx context.Context, in *GetLinkByIdAccountRequest, opts ...grpc.CallOption) (*GetLinkByIdAccountResponse, error)
+	GetLinksByIdAccounts(ctx context.Context, in *GetLinksByIdAccountsRequest, opts ...grpc.CallOption) (*GetLinksByIdAccountsResponse, error)
 }
 
 type storageServiceClient struct {
@@ -79,6 +81,15 @@ func (c *storageServiceClient) GetLinkByIdAccount(ctx context.Context, in *GetLi
 	return out, nil
 }
 
+func (c *storageServiceClient) GetLinksByIdAccounts(ctx context.Context, in *GetLinksByIdAccountsRequest, opts ...grpc.CallOption) (*GetLinksByIdAccountsResponse, error) {
+	out := new(GetLinksByIdAccountsResponse)
+	err := c.cc.Invoke(ctx, StorageService_GetLinksByIdAccounts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageServiceServer is the server API for StorageService service.
 // All implementations must embed UnimplementedStorageServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type StorageServiceServer interface {
 	UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error)
 	GetImage(context.Context, *GetImageRequest) (*GetImageResponse, error)
 	GetLinkByIdAccount(context.Context, *GetLinkByIdAccountRequest) (*GetLinkByIdAccountResponse, error)
+	GetLinksByIdAccounts(context.Context, *GetLinksByIdAccountsRequest) (*GetLinksByIdAccountsResponse, error)
 	mustEmbedUnimplementedStorageServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedStorageServiceServer) GetImage(context.Context, *GetImageRequ
 }
 func (UnimplementedStorageServiceServer) GetLinkByIdAccount(context.Context, *GetLinkByIdAccountRequest) (*GetLinkByIdAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLinkByIdAccount not implemented")
+}
+func (UnimplementedStorageServiceServer) GetLinksByIdAccounts(context.Context, *GetLinksByIdAccountsRequest) (*GetLinksByIdAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLinksByIdAccounts not implemented")
 }
 func (UnimplementedStorageServiceServer) mustEmbedUnimplementedStorageServiceServer() {}
 
@@ -191,6 +206,24 @@ func _StorageService_GetLinkByIdAccount_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageService_GetLinksByIdAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLinksByIdAccountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).GetLinksByIdAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageService_GetLinksByIdAccounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).GetLinksByIdAccounts(ctx, req.(*GetLinksByIdAccountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageService_ServiceDesc is the grpc.ServiceDesc for StorageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var StorageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLinkByIdAccount",
 			Handler:    _StorageService_GetLinkByIdAccount_Handler,
+		},
+		{
+			MethodName: "GetLinksByIdAccounts",
+			Handler:    _StorageService_GetLinksByIdAccounts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
