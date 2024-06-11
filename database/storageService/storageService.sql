@@ -92,11 +92,38 @@ ALTER TABLE ONLY public.files ALTER COLUMN id SET DEFAULT nextval('public.images
 
 COPY public.files (id, id_account, link, path) FROM stdin;
 20	63	\N	\N
-21	64	\N	\N
 18	54	9edd9b2d4a07774e6664f7f9f3fb3839d8ebfde349597404ce48c21063ad725d.jpg	img\\9edd9b2d4a07774e6664f7f9f3fb3839d8ebfde349597404ce48c21063ad725d.jpg
 19	61	2c99c04146587a7a8215f4d0361987f6b7f7efc3da716a22bd9603d2d5fea133.gif	img\\2c99c04146587a7a8215f4d0361987f6b7f7efc3da716a22bd9603d2d5fea133.gif
 22	65	28460b43a6f9551869d2e427e0fddffca884ed70337e36c41165c359490a48a3.png	img\\28460b43a6f9551869d2e427e0fddffca884ed70337e36c41165c359490a48a3.png
-23	67	\N	\N
+23	67	5dba52a42fcfdd93f38a36da98dfdeaf1c819e265d207dc0371ca7a4aa1d8d99.jpg	img\\5dba52a42fcfdd93f38a36da98dfdeaf1c819e265d207dc0371ca7a4aa1d8d99.jpg
+24	\N	francuzsckij_zhim_lezha_so_shtangoj.gif	exercise\\francuzsckij_zhim_lezha_so_shtangoj.gif
+25	\N	good_morning_sto_shtangoj.gif	exercise\\good_morning_sto_shtangoj.gif
+26	\N	mostik_shtanga.gif	exercise\\mostik_shtanga.gif
+27	\N	obratnaya_tyaga_shtangi_v_naklone.gif	exercise\\obratnaya_tyaga_shtangi_v_naklone.gif
+28	\N	podem_na_cypochki_so_shtangoj.gif	exercise\\podem_na_cypochki_so_shtangoj.gif
+29	\N	podem_shtangi_pered_soboj.gif	exercise\\podem_shtangi_pered_soboj.gif
+30	\N	prisedanie_frontalnoe_so_shtangoj.gif	exercise\\prisedanie_frontalnoe_so_shtangoj.gif
+31	\N	prisedanie_so_shtangoj.gif	exercise\\prisedanie_so_shtangoj.gif
+32	\N	razgibanie_iz_za_golovy_so_shtangoj_sidya.gif	exercise\\razgibanie_iz_za_golovy_so_shtangoj_sidya.gif
+33	\N	rumynskaya_tyga_shtanga.gif	exercise\\rumynskaya_tyga_shtanga.gif
+34	\N	sgibanie_ruk_obratnyj_hvat_so_shtangoj.gif	exercise\\sgibanie_ruk_obratnyj_hvat_so_shtangoj.gif
+35	\N	sgibanie_ruk_so_shtangoj.gif	exercise\\sgibanie_ruk_so_shtangoj.gif
+36	\N	shragi_so_shtangoj.gif	exercise\\shragi_so_shtangoj.gif
+37	\N	stanovaya_sumo_tyaga_shtangi.gif	exercise\\stanovaya_sumo_tyaga_shtangi.gif
+38	\N	stanovaya_tyaga.gif	exercise\\stanovaya_tyaga.gif
+39	\N	sumo_prisedanie_so_shtangoj.gif	exercise\\sumo_prisedanie_so_shtangoj.gif
+40	\N	tyaga_shtangi_k_podborodku.gif	exercise\\tyaga_shtangi_k_podborodku.gif
+41	\N	tyaga_shtangi_v_naklone.gif	exercise\\tyaga_shtangi_v_naklone.gif
+42	\N	vypad_bolgarskij_so_shtangoj.gif	exercise\\vypad_bolgarskij_so_shtangoj.gif
+43	\N	vypad_na_meste_so_shtangoj.gif	exercise\\vypad_na_meste_so_shtangoj.gif
+44	\N	vypad_nazad_so_shtangoj.gif	exercise\\vypad_nazad_so_shtangoj.gif
+45	\N	vypad_vpered_so_shtangoj.gif	exercise\\vypad_vpered_so_shtangoj.gif
+46	\N	zashagivanie_na_skamiu_so_shtangoj.gif	exercise\\zashagivanie_na_skamiu_so_shtangoj.gif
+47	\N	zhim_lezha_so_shtangoj.gif	exercise\\zhim_lezha_so_shtangoj.gif
+48	\N	zhim_shtangi_na_plechi.gif	exercise\\zhim_shtangi_na_plechi.gif
+49	\N	zhim_shtangi_za_golovu.gif	exercise\\zhim_shtangi_za_golovu.gif
+50	\N	zhim_uzkij_so_shtangoj.gif	exercise\\zhim_uzkij_so_shtangoj.gif
+21	64	e7a55824b46fbe167c62d46953afc9ff8827c294f23dd1c27c35f388d716ad8d.jpg	img\\e7a55824b46fbe167c62d46953afc9ff8827c294f23dd1c27c35f388d716ad8d.jpg
 \.
 
 
@@ -104,7 +131,7 @@ COPY public.files (id, id_account, link, path) FROM stdin;
 -- Name: images_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.images_id_seq', 23, true);
+SELECT pg_catalog.setval('public.images_id_seq', 50, true);
 
 
 --

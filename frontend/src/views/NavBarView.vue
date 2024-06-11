@@ -27,6 +27,9 @@ const logout = async () => {
             }, 2000)
         }
         toastStore.stopToast(notifyId, data.message, "error")
+        if (userStore?.data) {
+            await router.push({ name: 'auth' })
+        }
     }
     catch (err) {
         console.log(err)

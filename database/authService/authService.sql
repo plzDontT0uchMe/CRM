@@ -51,7 +51,6 @@ CREATE TABLE public.accounts (
     id integer NOT NULL,
     login character varying NOT NULL,
     password character varying NOT NULL,
-    role integer DEFAULT 0 NOT NULL,
     last_activity timestamp without time zone,
     date_created timestamp without time zone
 );
@@ -122,13 +121,13 @@ ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.use
 -- Data for Name: accounts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.accounts (id, login, password, role, last_activity, date_created) FROM stdin;
-54	123	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	0	2024-06-06 22:54:43.279179	2024-05-27 19:18:20.819001
-65	555	a217099448fbcbe0386d5167803eaae8c938c0ca921cada9a7b8a0f8547f0682	0	2024-06-06 22:58:36.995765	2024-06-05 14:42:05.763031
-64	666	687e31da4e79db2bf0b7ae88b60f5fea0ddec3079ccebf1e39d91951fffc6606	0	2024-06-06 23:00:37.899786	2024-06-05 14:40:03.117513
-61	321	d9b23136ec5a38bc8714537d82358a2f5c406e56a616fdc941231bd27b24d68c	0	2024-06-06 23:00:59.546382	2024-05-30 09:33:47.588416
-67	333	3d9811cb89f6961e0f3a65d73785fa682284582842754dc7f1554fbdb1a701c5	0	2024-06-06 23:09:09.129363	2024-06-06 23:09:09.129363
-63	777	4e5342de9fe02f90ce045fe536e1c47f937108079b1a64cda0039153422d7b1d	0	2024-06-06 14:35:16.436173	2024-06-05 13:44:39.390543
+COPY public.accounts (id, login, password, last_activity, date_created) FROM stdin;
+67	333	3d9811cb89f6961e0f3a65d73785fa682284582842754dc7f1554fbdb1a701c5	2024-06-11 00:26:58.989978	2024-06-06 23:09:09.129363
+65	555	a217099448fbcbe0386d5167803eaae8c938c0ca921cada9a7b8a0f8547f0682	2024-06-11 00:28:09.595482	2024-06-05 14:42:05.763031
+64	666	687e31da4e79db2bf0b7ae88b60f5fea0ddec3079ccebf1e39d91951fffc6606	2024-06-11 00:31:13.495484	2024-06-05 14:40:03.117513
+61	321	d9b23136ec5a38bc8714537d82358a2f5c406e56a616fdc941231bd27b24d68c	2024-06-11 01:55:39.524977	2024-05-30 09:33:47.588416
+63	777	4e5342de9fe02f90ce045fe536e1c47f937108079b1a64cda0039153422d7b1d	2024-06-09 19:14:51.785899	2024-06-05 13:44:39.390543
+54	123	d13e40a29eb822914e3dc8098d3d1b05bf8fe1c602e3d021cd9ae73b18216582	2024-06-11 02:25:51.892156	2024-05-27 19:18:20.819001
 \.
 
 
@@ -137,7 +136,9 @@ COPY public.accounts (id, login, password, role, last_activity, date_created) FR
 --
 
 COPY public.sessions (id, id_account, access_token, date_expiration_access_token, refresh_token, date_expiration_refresh_token) FROM stdin;
-474	67	32913a6c769d2dd7ab248a3ca7d8d8a1b93491b9a697fd5560d927112f23d3a8	2024-06-06 23:10:09.167562	50021bddb12c46db737d855573475339d972f7d20f5404d9af8c223f49a95732	2024-06-06 23:14:09.167562
+724	54	fcd8a310a789d46f13eead8b05952ead872b0b9f52b94767103265e0690ce748	2024-06-11 02:26:06.601746	00bfb549bf5030833c3c77de9b31da8ea7e9c6f92d3c2828255f3ab59c5e1b63	2024-06-11 02:26:37.719772
+706	64	c23c4bb474cc23085fe8e6c99646a228252142448e6c51e251aabdbfd563e644	2024-06-11 00:31:30.088164	2c0783516ad154cc109dd559e9764bd6195f5b31ae32f8888fa7d493742043fc	2024-06-11 00:33:14.49398
+719	61	5df2ef07f1433b2a8dd58179d2ea2385e2826402b3bc7131ae771fcfdc71e7a9	2024-06-11 01:56:01.921957	e3f85685c855b117e118a011cc6399e360c11d31c25e27cb17afec7b2076e3cc	2024-06-11 01:56:06.789743
 \.
 
 
@@ -145,14 +146,14 @@ COPY public.sessions (id, id_account, access_token, date_expiration_access_token
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 474, true);
+SELECT pg_catalog.setval('public.sessions_id_seq', 724, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 67, true);
+SELECT pg_catalog.setval('public.users_id_seq', 70, true);
 
 
 --

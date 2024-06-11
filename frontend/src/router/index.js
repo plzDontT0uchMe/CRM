@@ -34,7 +34,44 @@ const router = createRouter({
         {
             path: '/settings',
             name: 'settings',
-            component: () => import('../views/SettingsView.vue')
+            component: () => import('../views/SettingsView.vue'),
+            children: [
+                {
+                    path: 'account',
+                    name: 'account',
+                    component: () => import('@/components/SettingsForm.vue')
+                },
+                {
+                    path: 'security',
+                    name: 'security',
+                    component: () => import('@/components/SecuritySettings.vue')
+                },
+                {
+                    path: 'info',
+                    name: 'info',
+                    component: () => import('@/components/InfoSettings.vue')
+                },
+                {
+                    path: 'billing',
+                    name: 'billing',
+                    component: () => import('@/components/BillingSettings.vue')
+                }
+            ]
+        },
+        {
+            path: '/membership',
+            name: 'membership',
+            component: () => import('@/views/MemberShipView.vue')
+        },
+        {
+            path: '/exercise',
+            name: 'exercise',
+            component: () => import('@/views/ExerciseView.vue')
+        },
+        {
+            path: '/workout-plans',
+            name: 'workout-plans',
+            component: () => import('@/views/WorkoutPlansView.vue')
         },
         {
             path: "/:pathMatch(.*)*",
@@ -57,6 +94,5 @@ router.beforeEach((to, from, next) => {
     }
     next()
 })
-//todo перенести проверку checkAuth сюда!
 
 export default router

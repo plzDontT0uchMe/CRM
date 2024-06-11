@@ -26,7 +26,7 @@
           ✕
         </button>
         <h2 class="text-lg font-bold">{{ selectedExercise.name }}</h2>
-        <img :src="selectedExercise.image" alt="exercise-image" class="w-full h-auto mt-4" />
+        <img :src="axios.defaults.baseURL + '/api/getImage/' + selectedExercise.image" alt="exercise-image" class="w-full h-auto mt-4" />
         <h3 class="text-lg font-bold mt-4">Описание</h3>
         <p class="mt-2 description">{{ selectedExercise.description }}</p>
         <h3 class="text-lg font-bold mt-4">Мускулы</h3>
@@ -41,12 +41,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import Header from '../components/Header.vue'
 import Menu from '../components/Menu.vue'
 import ExerciseCard from '../components/ExerciseCard.vue'
+import axios from '@/axios/index.js'
 
 const store = useStore()
 const theme = computed(() => store.state.theme)
@@ -59,6 +60,21 @@ const openModal = (exercise) => {
   selectedExercise.value = exercise
   showModal.value = true
 }
+
+const getExercises = async () => {
+    try{
+        const resp = await axios.get("/api/getExercises")
+        if (resp.data.successfully) {
+            exercises.value = resp.data.exercises
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+onMounted(async () => {
+    await getExercises()
+})
 
 const exercises = ref([
   {

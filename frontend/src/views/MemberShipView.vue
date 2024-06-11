@@ -1,5 +1,5 @@
 <template>
-  <div :class="['app', theme]">
+  <div v-if="isLoaded" :class="['app', theme]">
     <Header />
     <div class="content">
       <Menu />
@@ -21,8 +21,10 @@
           <SubscriptionCard
             v-for="subscription in subscriptions"
             :key="subscription.id"
+            :id="subscription.id"
             :name="subscription.name"
             :price="subscription.price"
+            :duration="selectedDuration"
             :features="subscription.possibilities"
             :color="subscription.color"
             :selectedDuration="selectedDuration"
@@ -46,14 +48,14 @@
             :key="trainer.id"
             class="trainer-item border border-gray-300 p-4 rounded-lg mb-4"
           >
-            <img :src="trainer.avatar" alt="trainer-avatar" class="trainer-avatar" />
+            <img :src="axios.defaults.baseURL + '/api/getImage/' + trainer.image" alt="trainer-avatar" class="trainer-avatar" />
             <div class="trainer-info">
-              <h3>{{ trainer.fullName }}</h3>
-              <p>{{ $t('age') }}: {{ getAge(trainer.dateOfBirth) }}</p>
-              <p>{{ $t('experience') }}: {{ trainer.experience }} {{ $t('years') }}</p>
+              <h3>{{ trainer.name }} {{trainer.surname}} {{trainer.patronymic}}</h3>
+              <p>{{ $t('age') }}: {{ trainer.dateBorn }}</p>
+              <p>{{ $t('experience') }}: {{ trainer.trainerInfo[0].exp }} {{ $t('years') }}</p>
               <p>{{ $t('gender') }}: {{ trainer.gender }}</p>
-              <p>{{ $t('sportType') }}: {{ trainer.sportType }}</p>
-              <p>{{ $t('achievements') }}: {{ trainer.achievements }}</p>
+              <p>{{ $t('sportType') }}: {{ trainer.trainerInfo[0].sport }}</p>
+              <p>{{ $t('achievements') }}: {{ trainer.trainerInfo[0].achievements }}</p>
               <div class="rating">
                 <span
                   v-for="star in 5"
@@ -71,16 +73,56 @@
       </div>
     </div>
   </div>
+    <span v-else class="loading"></span>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import Header from '../components/Header.vue'
 import Menu from '../components/Menu.vue'
 import SubscriptionCard from '../components/SubscriptionCard.vue'
-import { subscriptions } from '../store/mockData'
+import axios from '@/axios/index.js'
+import { useUserStore } from '@/stores/user.js'
+
+const userStore = useUserStore()
+const subscriptions = ref('')
+
+const getSubs = async () => {
+    try {
+        const resp = await axios.get('/api/getSubs')
+        if (resp.data.successfully) {
+            subscriptions.value = resp.data.subscriptions
+            allFeatures.value = resp.data.subscriptions[2].possibilities
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+const getTrainers = async () => {
+    try {
+        const resp = await axios.get('/api/getTrainers')
+        if (resp.data.successfully) {
+            trainers.value = resp.data.trainers
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+const isLoaded = ref(false)
+
+onMounted(async () => {
+    isLoaded.value = false
+    await getSubs()
+    await getTrainers()
+    selectedTrainer.value = userStore.data.subscription.trainer
+    isLoaded.value = true
+})
 
 const store = useStore()
 const theme = computed(() => store.state.theme)
@@ -93,12 +135,12 @@ const selectDuration = (duration) => {
   selectedDuration.value = duration
 }
 
-const allFeatures = ['workoutProgram', 'nutritionDiary', 'workoutDiary', 'bookGym', 'bookTrainer']
+const allFeatures = ref('')
 
 const showTrainerModal = ref(false)
 const selectedTrainer = ref(null)
 
-const trainers = [
+const trainers = ref([
   {
     id: 1,
     firstName: 'John',
@@ -144,7 +186,7 @@ const trainers = [
     fullName: 'Alice C. Johnson',
     description: 'Yoga and flexibility expert.'
   }
-]
+])
 
 const openTrainerModal = () => {
   showTrainerModal.value = true

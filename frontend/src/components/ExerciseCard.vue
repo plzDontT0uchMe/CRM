@@ -4,7 +4,7 @@
     @click="$emit('open-modal', exercise)"
   >
     <figure>
-      <img :src="exercise.image" alt="exercise-image" class="exercise-image" />
+      <img :src="axios.defaults.baseURL + '/api/getImage/' + exercise.image" alt="exercise-image" class="exercise-image" />
     </figure>
     <div class="card-body">
       <h2 class="card-title">{{ exercise.name }}</h2>
@@ -21,6 +21,7 @@
 <script setup>
 import { defineProps } from 'vue'
 import { useI18n } from 'vue-i18n'
+import axios from '@/axios/index.js'
 
 const props = defineProps({
   exercise: Object

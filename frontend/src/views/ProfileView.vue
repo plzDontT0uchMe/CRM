@@ -14,7 +14,7 @@ const route = useRoute();
 const user = ref(null)
 const isLoaded = ref(false)
 
-const getUser = async () => {
+/*const getUser = async () => {
     try {
         const { data } = await axios.get(`/api/getUser/${route.params.id}`)
         if (data.successfully) {
@@ -35,12 +35,29 @@ onMounted(() => {
 
 watch(() => route.params.id, () => {
     getUser()
-})
+})*/
+
+import Header from '../components/Header.vue'
+import Menu from '../components/Menu.vue'
+import ProfileForm from '../components/ProfileForm.vue'
 
 </script>
 
 <template>
-    <div class="w-screen h-[80vh] flex flex-col justify-center items-center space-y-2" v-if="isLoaded">
+    <div class="profile-container">
+        <Header />
+        <div class="content">
+            <Menu />
+            <div class="profile-content">
+                <ProfileForm />
+            </div>
+        </div>
+    </div>
+
+
+
+
+<!--    <div class="w-screen h-[80vh] flex flex-col justify-center items-center space-y-2" v-if="isLoaded">
         <div class="avatar">
             <div class="w-32 rounded">
                 <img v-if="user.image" :src="axios.defaults.baseURL + '/api/getImage/' + user?.image" />
@@ -87,9 +104,34 @@ watch(() => route.params.id, () => {
             <p>{{moment(user.lastActivity).fromNow()}}</p>
         </div>
     </div>
-    <span class="loading loading-lg" v-else></span>
+    <span class="loading loading-lg" v-else></span>-->
 </template>
 
 <style scoped>
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
 
+.content {
+    display: flex;
+    flex: 1;
+    background-color: var(--content-background-color);
+    color: var(--content-text-color);
+}
+
+.menu {
+    height: 100%;
+    flex-shrink: 0;
+}
+
+.profile-content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>

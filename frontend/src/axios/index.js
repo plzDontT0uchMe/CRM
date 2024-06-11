@@ -20,7 +20,7 @@ customAxios.interceptors.response.use(async function(response) {
     if (response.config.url == '/api/auth' || response.config.url == '/api/reg') {
         return response
     }
-    if (!response.data.successfully && response.data.message == 'access token not found in cookie, authorization failed') {
+    if (!response.data.successfully && (response.data.message == 'access token not found in cookie, authorization failed' || response.data.message == 'access token expired')) {
         const { data } = await axios.get(customAxios.defaults.baseURL + '/api/updateToken', { withCredentials: true })
         if (data.successfully) {
             response.config._retryAttempt = true

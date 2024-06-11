@@ -21,38 +21,86 @@
       </button>
 
       <!-- Иконка профиля -->
-      <div
-        class="profile-icon"
-        @click="toggleProfileMenu"
-        :class="{ active: isProfileMenuVisible }"
-      >
-        <img :src="profilePhoto" alt="Profile" />
-        <div
-          v-if="isProfileMenuVisible"
-          class="profile-menu"
-          :class="[theme, { 'menu-visible': isProfileMenuVisible }]"
-        >
-          <p @click="viewProfile" class="menu-item">{{ $t('profile') }}</p>
-          <p @click="viewSettings" class="menu-item">{{ $t('settings') }}</p>
-          <p @click="logout" class="menu-item">{{ $t('logout') }}</p>
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                    <img v-if="userStore?.data?.image" alt="Tailwind CSS Navbar component"
+                         :src="axios.defaults.baseURL + '/api/getImage/' + userStore?.data?.image" />
+                    <div v-else>
+                        <ManIcon v-if="userStore?.data?.gender === 1"/>
+                        <WomenIcon v-else-if="userStore?.data?.gender === 2"/>
+                        <UserIcon v-else />
+                    </div>
+                </div>
+            </div>
+            <ul tabindex="0"
+                class="menu menu-sm profile-menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                <li>
+                    <router-link :to="{ name: 'profile', params: { id: userStore?.data?.id || null } }"
+                                 class="justify-between">
+                        Profile
+                    </router-link>
+                </li>
+                <li>
+                    <router-link :to="{ name: 'settings' }"
+                                 class="justify-between">
+                        Settings
+                    </router-link>
+                </li>
+                <li>
+                    <a @click="logout">
+                        Logout
+                    </a>
+                </li>
+            </ul>
         </div>
-      </div>
     </div>
   </header>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import SunIcons from './icons/SunIcons.vue'
 import MoonIcons from './icons/MoonIcons.vue'
+import { useUserStore } from '@/stores/user.js'
+import { useToastStore } from '@/stores/toast.js'
+import axios from '@/axios/index.js'
+import ManIcon from '@/components/icons/ManIcon.vue'
+import UserIcon from '@/components/icons/UserIcon.vue'
+import WomenIcon from '@/components/icons/WomenIcon.vue'
 
 const store = useStore()
 const { t, locale } = useI18n()
-const profilePhoto = computed(() => store.getters.profilePhoto)
 const theme = computed(() => store.state.theme)
+
+const userStore = useUserStore()
+const toastStore = useToastStore()
+
+const route = useRoute()
+
+const logout = async () => {
+    const notifyId = toastStore.startToast('loading', 'Выполняется выход... 🚀', 'top-center')
+    try {
+        const { data } = await axios.post('/api/logout')
+        if (data.successfully) {
+            toastStore.stopToast(notifyId, "Выход выполнен успешно", "success")
+            setTimeout(async () => {
+                userStore.data = null
+                await router.push({ name: 'auth' })
+            }, 2000)
+        }
+        toastStore.stopToast(notifyId, data.message, "error")
+        if (userStore?.data) {
+            await router.push({ name: 'auth' })
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
 
 const isProfileMenuVisible = ref(false)
 const currentLanguage = ref('en')
@@ -67,17 +115,6 @@ const toggleProfileMenu = () => {
   isProfileMenuVisible.value = !isProfileMenuVisible.value
 }
 
-const viewProfile = () => {
-  router.push('/profile')
-}
-
-const viewSettings = () => {
-  router.push('/settings')
-}
-
-const logout = () => {
-  router.push('/login')
-}
 </script>
 
 <style scoped>
