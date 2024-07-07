@@ -10,11 +10,13 @@ type Server struct {
 	usersService.UsersServiceServer
 }
 
-/*func (s *Server) Registration(ctx context.Context, registrationRequest *usersService.RegistrationRequest) (*usersService.RegistrationResponse, error) {
+func (s *Server) Registration(ctx context.Context, registrationRequest *usersService.RegistrationRequest) (*usersService.RegistrationResponse, error) {
 	response := &usersService.RegistrationResponse{}
 
-	err, httpStatus := service.RegisterUser(registrationRequest)
-}*/
+	service.Registration(registrationRequest, response)
+
+	return response, nil
+}
 
 func (s *Server) GetUser(ctx context.Context, request *usersService.GetUserRequest) (*usersService.GetUserResponse, error) {
 	response := &usersService.GetUserResponse{}

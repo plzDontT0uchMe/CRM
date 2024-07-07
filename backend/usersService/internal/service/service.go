@@ -11,32 +11,43 @@ import (
 	"strings"
 )
 
-/*func RegisterUser(r *usersService.RegistrationRequest) (error, int) {
-	user := models.User{
-		IdAccount: int(r.IdAccount),
-		Gender:    0,
+func Registration(request *usersService.RegistrationRequest, response *usersService.RegistrationResponse) {
+	user := usersService.User{
+		Id: request.Id,
 	}
 
-	err, httpStatus := postgres.CreateUser(&user)
+	_, err := postgres.Registration(&user)
 	if err != nil {
-		return err, httpStatus
+		logger.CreateLog("error", fmt.Sprintf("register user: %v", err))
+		response.Status = &usersService.Status{
+			Successfully: false,
+			Message:      "error registering user",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
 	}
 
-	return nil, httpStatus
-}*/
+	logger.CreateLog("info", "register user successfully")
+	response.Status = &usersService.Status{
+		Successfully: true,
+		Message:      "registering user successfully",
+		HttpStatus:   http.StatusOK,
+	}
+}
 
 func GetUser(request *usersService.GetUserRequest, response *usersService.GetUserResponse) {
 	response.User = make(map[int64]*usersService.User)
 	for _, id := range request.Id {
 		var trainerInfo sql.NullString
 		var dateBorn sql.NullTime
+		var name, surname, patronymic sql.NullString
 
 		user := &usersService.User{
 			Id: id,
 		}
 
 		row := postgres.GetUser(user)
-		err := row.Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Gender, &dateBorn, &user.Position, &trainerInfo)
+		err := row.Scan(&name, &surname, &patronymic, &user.Gender, &dateBorn, &user.Position, &trainerInfo)
 		if err != nil {
 			logger.CreateLog("error", fmt.Sprintf("scan user: %v", err))
 			response.Status = &usersService.Status{
@@ -49,6 +60,9 @@ func GetUser(request *usersService.GetUserRequest, response *usersService.GetUse
 
 		user.DateBorn = utils.ConvertSQLNullTimeToTimestamp(dateBorn)
 		trainerInfo.String = strings.ReplaceAll(trainerInfo.String, "\n", "")
+		user.Name = utils.ConvertSQLNullStringToString(name)
+		user.Surname = utils.ConvertSQLNullStringToString(surname)
+		user.Patronymic = utils.ConvertSQLNullStringToString(patronymic)
 
 		if trainerInfo.Valid {
 			for _, v := range strings.Split(utils.ConvertSQLNullStringToString(trainerInfo), "|") {
@@ -106,8 +120,6 @@ func GetTrainers(request *usersService.GetTrainersRequest, response *usersServic
 
 		if trainerInfo.Valid {
 			for _, v := range strings.Split(utils.ConvertSQLNullStringToString(trainerInfo), "|") {
-				fmt.Println(strings.Split(v, ";")[0])
-				fmt.Println(utils.ConvertStringToInt64(strings.Split(v, ";")[0]))
 				TrainerInfo := &usersService.TrainerInfo{
 					Exp:          utils.ConvertStringToInt64(strings.Split(v, ";")[0]),
 					Sport:        strings.Split(v, ";")[1],

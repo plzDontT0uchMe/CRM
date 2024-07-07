@@ -1,14 +1,14 @@
 env: "production"
 api_gateway:
-    host: "193.169.105.90"
+    host: "api-gateway"
     port: 3000
-    address: "193.169.105.90:3000"
+    address: "api-gateway:3000"
 storage_service:
-    host: "193.169.105.90"
+    host: "0.0.0.0"
     port: 3003
-    address: "193.169.105.90:3003"
+    address: "0.0.0.0:3003"
 db:
-    host: "193.169.105.90"
+    host: "172.17.0.1"
     port: 5432
     user: "postgres"
     password: "0000"

@@ -92,7 +92,7 @@ CREATE TABLE public.users (
     patronymic character varying,
     gender integer DEFAULT 0,
     date_born date,
-    "position" character varying
+    "position" character varying DEFAULT 'client'::character varying
 );
 
 
@@ -156,6 +156,8 @@ COPY public.users (id, id_account, name, surname, patronymic, gender, date_born,
 6	65	Minion	Champion		0	\N	trainer
 10	67	test123			0	\N	client
 5	64	233	34	23552	2	1999-03-20	client
+12	75	\N	\N	\N	0	\N	director
+13	76	\N	\N	\N	0	\N	owner
 \.
 
 
@@ -170,7 +172,7 @@ SELECT pg_catalog.setval('public.trainers_id_seq', 3, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 10, true);
+SELECT pg_catalog.setval('public.users_id_seq', 13, true);
 
 
 --
@@ -187,6 +189,22 @@ ALTER TABLE ONLY public.trainers
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pk_2; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pk_2 UNIQUE (id_account);
+
+
+--
+-- Name: trainers trainers_users_id_account_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.trainers
+    ADD CONSTRAINT trainers_users_id_account_fk FOREIGN KEY (id_account) REFERENCES public.users(id_account) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

@@ -23,6 +23,10 @@ const (
 	TrainingService_GetExerciseById_FullMethodName     = "/trainingService.TrainingService/GetExerciseById"
 	TrainingService_CreateProgram_FullMethodName       = "/trainingService.TrainingService/CreateProgram"
 	TrainingService_GetProgramsByUserId_FullMethodName = "/trainingService.TrainingService/GetProgramsByUserId"
+	TrainingService_DeleteProgramLocal_FullMethodName  = "/trainingService.TrainingService/DeleteProgramLocal"
+	TrainingService_DeleteProgram_FullMethodName       = "/trainingService.TrainingService/DeleteProgram"
+	TrainingService_ShareProgram_FullMethodName        = "/trainingService.TrainingService/ShareProgram"
+	TrainingService_ChangeProgram_FullMethodName       = "/trainingService.TrainingService/ChangeProgram"
 )
 
 // TrainingServiceClient is the client API for TrainingService service.
@@ -33,6 +37,10 @@ type TrainingServiceClient interface {
 	GetExerciseById(ctx context.Context, in *GetExerciseByIdRequest, opts ...grpc.CallOption) (*GetExerciseByIdResponse, error)
 	CreateProgram(ctx context.Context, in *CreateProgramRequest, opts ...grpc.CallOption) (*CreateProgramResponse, error)
 	GetProgramsByUserId(ctx context.Context, in *GetProgramsByUserIdRequest, opts ...grpc.CallOption) (*GetProgramsByUserIdResponse, error)
+	DeleteProgramLocal(ctx context.Context, in *DeleteProgramLocalRequest, opts ...grpc.CallOption) (*DeleteProgramLocalResponse, error)
+	DeleteProgram(ctx context.Context, in *DeleteProgramRequest, opts ...grpc.CallOption) (*DeleteProgramResponse, error)
+	ShareProgram(ctx context.Context, in *ShareProgramRequest, opts ...grpc.CallOption) (*ShareProgramResponse, error)
+	ChangeProgram(ctx context.Context, in *ChangeProgramRequest, opts ...grpc.CallOption) (*ChangeProgramResponse, error)
 }
 
 type trainingServiceClient struct {
@@ -79,6 +87,42 @@ func (c *trainingServiceClient) GetProgramsByUserId(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *trainingServiceClient) DeleteProgramLocal(ctx context.Context, in *DeleteProgramLocalRequest, opts ...grpc.CallOption) (*DeleteProgramLocalResponse, error) {
+	out := new(DeleteProgramLocalResponse)
+	err := c.cc.Invoke(ctx, TrainingService_DeleteProgramLocal_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainingServiceClient) DeleteProgram(ctx context.Context, in *DeleteProgramRequest, opts ...grpc.CallOption) (*DeleteProgramResponse, error) {
+	out := new(DeleteProgramResponse)
+	err := c.cc.Invoke(ctx, TrainingService_DeleteProgram_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainingServiceClient) ShareProgram(ctx context.Context, in *ShareProgramRequest, opts ...grpc.CallOption) (*ShareProgramResponse, error) {
+	out := new(ShareProgramResponse)
+	err := c.cc.Invoke(ctx, TrainingService_ShareProgram_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainingServiceClient) ChangeProgram(ctx context.Context, in *ChangeProgramRequest, opts ...grpc.CallOption) (*ChangeProgramResponse, error) {
+	out := new(ChangeProgramResponse)
+	err := c.cc.Invoke(ctx, TrainingService_ChangeProgram_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrainingServiceServer is the server API for TrainingService service.
 // All implementations must embed UnimplementedTrainingServiceServer
 // for forward compatibility
@@ -87,6 +131,10 @@ type TrainingServiceServer interface {
 	GetExerciseById(context.Context, *GetExerciseByIdRequest) (*GetExerciseByIdResponse, error)
 	CreateProgram(context.Context, *CreateProgramRequest) (*CreateProgramResponse, error)
 	GetProgramsByUserId(context.Context, *GetProgramsByUserIdRequest) (*GetProgramsByUserIdResponse, error)
+	DeleteProgramLocal(context.Context, *DeleteProgramLocalRequest) (*DeleteProgramLocalResponse, error)
+	DeleteProgram(context.Context, *DeleteProgramRequest) (*DeleteProgramResponse, error)
+	ShareProgram(context.Context, *ShareProgramRequest) (*ShareProgramResponse, error)
+	ChangeProgram(context.Context, *ChangeProgramRequest) (*ChangeProgramResponse, error)
 	mustEmbedUnimplementedTrainingServiceServer()
 }
 
@@ -105,6 +153,18 @@ func (UnimplementedTrainingServiceServer) CreateProgram(context.Context, *Create
 }
 func (UnimplementedTrainingServiceServer) GetProgramsByUserId(context.Context, *GetProgramsByUserIdRequest) (*GetProgramsByUserIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProgramsByUserId not implemented")
+}
+func (UnimplementedTrainingServiceServer) DeleteProgramLocal(context.Context, *DeleteProgramLocalRequest) (*DeleteProgramLocalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProgramLocal not implemented")
+}
+func (UnimplementedTrainingServiceServer) DeleteProgram(context.Context, *DeleteProgramRequest) (*DeleteProgramResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProgram not implemented")
+}
+func (UnimplementedTrainingServiceServer) ShareProgram(context.Context, *ShareProgramRequest) (*ShareProgramResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShareProgram not implemented")
+}
+func (UnimplementedTrainingServiceServer) ChangeProgram(context.Context, *ChangeProgramRequest) (*ChangeProgramResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeProgram not implemented")
 }
 func (UnimplementedTrainingServiceServer) mustEmbedUnimplementedTrainingServiceServer() {}
 
@@ -191,6 +251,78 @@ func _TrainingService_GetProgramsByUserId_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrainingService_DeleteProgramLocal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProgramLocalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainingServiceServer).DeleteProgramLocal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TrainingService_DeleteProgramLocal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainingServiceServer).DeleteProgramLocal(ctx, req.(*DeleteProgramLocalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainingService_DeleteProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProgramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainingServiceServer).DeleteProgram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TrainingService_DeleteProgram_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainingServiceServer).DeleteProgram(ctx, req.(*DeleteProgramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainingService_ShareProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShareProgramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainingServiceServer).ShareProgram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TrainingService_ShareProgram_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainingServiceServer).ShareProgram(ctx, req.(*ShareProgramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainingService_ChangeProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeProgramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainingServiceServer).ChangeProgram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TrainingService_ChangeProgram_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainingServiceServer).ChangeProgram(ctx, req.(*ChangeProgramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TrainingService_ServiceDesc is the grpc.ServiceDesc for TrainingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +345,22 @@ var TrainingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProgramsByUserId",
 			Handler:    _TrainingService_GetProgramsByUserId_Handler,
+		},
+		{
+			MethodName: "DeleteProgramLocal",
+			Handler:    _TrainingService_DeleteProgramLocal_Handler,
+		},
+		{
+			MethodName: "DeleteProgram",
+			Handler:    _TrainingService_DeleteProgram_Handler,
+		},
+		{
+			MethodName: "ShareProgram",
+			Handler:    _TrainingService_ShareProgram_Handler,
+		},
+		{
+			MethodName: "ChangeProgram",
+			Handler:    _TrainingService_ChangeProgram_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,23 +1,14 @@
 package postgres
 
 import (
-	"CRM/go/storageService/internal/logger"
 	"context"
 	"database/sql"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"net/http"
 )
 
-func RegisterAccount(idAccount int) (error, int) {
-	_, err := GetDB().Exec(context.Background(), "INSERT INTO files (id_account) VALUES ($1)", idAccount)
-	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("error while registering account: %v", err))
-		return err, http.StatusInternalServerError
-	}
-
-	return nil, http.StatusOK
+func Registration(idAccount int64) (pgconn.CommandTag, error) {
+	return GetDB().Exec(context.Background(), "INSERT INTO files (id_account) VALUES ($1)", idAccount)
 }
 
 func UploadImage(idAccount int, link string, filePath string) (pgconn.CommandTag, error) {

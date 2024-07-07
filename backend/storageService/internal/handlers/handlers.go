@@ -10,14 +10,13 @@ type Server struct {
 	storageService.UnimplementedStorageServiceServer
 }
 
-/*func (s *Server) Registration(ctx context.Context, registrationRequest *storageService.RegistrationRequest) (*storageService.RegistrationResponse, error) {
-	err, httpStatus := service.RegisterAccount(registrationRequest)
-	if err != nil {
-		return &storageService.RegistrationResponse{Successfully: false, Message: "error registering account", HttpStatus: int64(httpStatus)}, nil
-	}
+func (s *Server) Registration(ctx context.Context, registrationRequest *storageService.RegistrationRequest) (*storageService.RegistrationResponse, error) {
+	response := &storageService.RegistrationResponse{}
 
-	return &storageService.RegistrationResponse{Successfully: true, Message: "registration successfully", HttpStatus: int64(httpStatus)}, nil
-}*/
+	service.Registration(registrationRequest, response)
+
+	return response, nil
+}
 
 func (s *Server) UploadImage(ctx context.Context, request *storageService.UploadImageRequest) (*storageService.UploadImageResponse, error) {
 	response := &storageService.UploadImageResponse{}

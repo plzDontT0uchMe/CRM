@@ -19,10 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SubsService_Registration_FullMethodName               = "/subsService.SubsService/Registration"
-	SubsService_GetSubscriptionByAccountId_FullMethodName = "/subsService.SubsService/GetSubscriptionByAccountId"
-	SubsService_GetSubscriptions_FullMethodName           = "/subsService.SubsService/GetSubscriptions"
-	SubsService_ChangeSubscription_FullMethodName         = "/subsService.SubsService/ChangeSubscription"
+	SubsService_Registration_FullMethodName                             = "/subsService.SubsService/Registration"
+	SubsService_GetSubscriptionByAccountId_FullMethodName               = "/subsService.SubsService/GetSubscriptionByAccountId"
+	SubsService_GetSubscriptions_FullMethodName                         = "/subsService.SubsService/GetSubscriptions"
+	SubsService_GetSubscriptionById_FullMethodName                      = "/subsService.SubsService/GetSubscriptionById"
+	SubsService_ChangeApplication_FullMethodName                        = "/subsService.SubsService/ChangeApplication"
+	SubsService_CreateApplication_FullMethodName                        = "/subsService.SubsService/CreateApplication"
+	SubsService_GetApplications_FullMethodName                          = "/subsService.SubsService/GetApplications"
+	SubsService_GetSubscriptionAndApplicationByAccountId_FullMethodName = "/subsService.SubsService/GetSubscriptionAndApplicationByAccountId"
+	SubsService_GetUsersByTrainerId_FullMethodName                      = "/subsService.SubsService/GetUsersByTrainerId"
 )
 
 // SubsServiceClient is the client API for SubsService service.
@@ -32,7 +37,12 @@ type SubsServiceClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	GetSubscriptionByAccountId(ctx context.Context, in *GetSubscriptionByAccountIdRequest, opts ...grpc.CallOption) (*GetSubscriptionByAccountIdResponse, error)
 	GetSubscriptions(ctx context.Context, in *GetSubscriptionsRequest, opts ...grpc.CallOption) (*GetSubscriptionsResponse, error)
-	ChangeSubscription(ctx context.Context, in *ChangeSubscriptionRequest, opts ...grpc.CallOption) (*ChangeSubscriptionResponse, error)
+	GetSubscriptionById(ctx context.Context, in *GetSubscriptionByIdRequest, opts ...grpc.CallOption) (*GetSubscriptionByIdResponse, error)
+	ChangeApplication(ctx context.Context, in *ChangeApplicationRequest, opts ...grpc.CallOption) (*ChangeApplicationResponse, error)
+	CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*CreateApplicationResponse, error)
+	GetApplications(ctx context.Context, in *GetApplicationsRequest, opts ...grpc.CallOption) (*GetApplicationsResponse, error)
+	GetSubscriptionAndApplicationByAccountId(ctx context.Context, in *GetSubscriptionAndApplicationByAccountIdRequest, opts ...grpc.CallOption) (*GetSubscriptionAndApplicationByAccountIdResponse, error)
+	GetUsersByTrainerId(ctx context.Context, in *GetUsersByTrainerIdRequest, opts ...grpc.CallOption) (*GetUsersByTrainerIdResponse, error)
 }
 
 type subsServiceClient struct {
@@ -70,9 +80,54 @@ func (c *subsServiceClient) GetSubscriptions(ctx context.Context, in *GetSubscri
 	return out, nil
 }
 
-func (c *subsServiceClient) ChangeSubscription(ctx context.Context, in *ChangeSubscriptionRequest, opts ...grpc.CallOption) (*ChangeSubscriptionResponse, error) {
-	out := new(ChangeSubscriptionResponse)
-	err := c.cc.Invoke(ctx, SubsService_ChangeSubscription_FullMethodName, in, out, opts...)
+func (c *subsServiceClient) GetSubscriptionById(ctx context.Context, in *GetSubscriptionByIdRequest, opts ...grpc.CallOption) (*GetSubscriptionByIdResponse, error) {
+	out := new(GetSubscriptionByIdResponse)
+	err := c.cc.Invoke(ctx, SubsService_GetSubscriptionById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subsServiceClient) ChangeApplication(ctx context.Context, in *ChangeApplicationRequest, opts ...grpc.CallOption) (*ChangeApplicationResponse, error) {
+	out := new(ChangeApplicationResponse)
+	err := c.cc.Invoke(ctx, SubsService_ChangeApplication_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subsServiceClient) CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*CreateApplicationResponse, error) {
+	out := new(CreateApplicationResponse)
+	err := c.cc.Invoke(ctx, SubsService_CreateApplication_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subsServiceClient) GetApplications(ctx context.Context, in *GetApplicationsRequest, opts ...grpc.CallOption) (*GetApplicationsResponse, error) {
+	out := new(GetApplicationsResponse)
+	err := c.cc.Invoke(ctx, SubsService_GetApplications_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subsServiceClient) GetSubscriptionAndApplicationByAccountId(ctx context.Context, in *GetSubscriptionAndApplicationByAccountIdRequest, opts ...grpc.CallOption) (*GetSubscriptionAndApplicationByAccountIdResponse, error) {
+	out := new(GetSubscriptionAndApplicationByAccountIdResponse)
+	err := c.cc.Invoke(ctx, SubsService_GetSubscriptionAndApplicationByAccountId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *subsServiceClient) GetUsersByTrainerId(ctx context.Context, in *GetUsersByTrainerIdRequest, opts ...grpc.CallOption) (*GetUsersByTrainerIdResponse, error) {
+	out := new(GetUsersByTrainerIdResponse)
+	err := c.cc.Invoke(ctx, SubsService_GetUsersByTrainerId_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +141,12 @@ type SubsServiceServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	GetSubscriptionByAccountId(context.Context, *GetSubscriptionByAccountIdRequest) (*GetSubscriptionByAccountIdResponse, error)
 	GetSubscriptions(context.Context, *GetSubscriptionsRequest) (*GetSubscriptionsResponse, error)
-	ChangeSubscription(context.Context, *ChangeSubscriptionRequest) (*ChangeSubscriptionResponse, error)
+	GetSubscriptionById(context.Context, *GetSubscriptionByIdRequest) (*GetSubscriptionByIdResponse, error)
+	ChangeApplication(context.Context, *ChangeApplicationRequest) (*ChangeApplicationResponse, error)
+	CreateApplication(context.Context, *CreateApplicationRequest) (*CreateApplicationResponse, error)
+	GetApplications(context.Context, *GetApplicationsRequest) (*GetApplicationsResponse, error)
+	GetSubscriptionAndApplicationByAccountId(context.Context, *GetSubscriptionAndApplicationByAccountIdRequest) (*GetSubscriptionAndApplicationByAccountIdResponse, error)
+	GetUsersByTrainerId(context.Context, *GetUsersByTrainerIdRequest) (*GetUsersByTrainerIdResponse, error)
 	mustEmbedUnimplementedSubsServiceServer()
 }
 
@@ -103,8 +163,23 @@ func (UnimplementedSubsServiceServer) GetSubscriptionByAccountId(context.Context
 func (UnimplementedSubsServiceServer) GetSubscriptions(context.Context, *GetSubscriptionsRequest) (*GetSubscriptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubscriptions not implemented")
 }
-func (UnimplementedSubsServiceServer) ChangeSubscription(context.Context, *ChangeSubscriptionRequest) (*ChangeSubscriptionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeSubscription not implemented")
+func (UnimplementedSubsServiceServer) GetSubscriptionById(context.Context, *GetSubscriptionByIdRequest) (*GetSubscriptionByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubscriptionById not implemented")
+}
+func (UnimplementedSubsServiceServer) ChangeApplication(context.Context, *ChangeApplicationRequest) (*ChangeApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeApplication not implemented")
+}
+func (UnimplementedSubsServiceServer) CreateApplication(context.Context, *CreateApplicationRequest) (*CreateApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateApplication not implemented")
+}
+func (UnimplementedSubsServiceServer) GetApplications(context.Context, *GetApplicationsRequest) (*GetApplicationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApplications not implemented")
+}
+func (UnimplementedSubsServiceServer) GetSubscriptionAndApplicationByAccountId(context.Context, *GetSubscriptionAndApplicationByAccountIdRequest) (*GetSubscriptionAndApplicationByAccountIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubscriptionAndApplicationByAccountId not implemented")
+}
+func (UnimplementedSubsServiceServer) GetUsersByTrainerId(context.Context, *GetUsersByTrainerIdRequest) (*GetUsersByTrainerIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersByTrainerId not implemented")
 }
 func (UnimplementedSubsServiceServer) mustEmbedUnimplementedSubsServiceServer() {}
 
@@ -173,20 +248,110 @@ func _SubsService_GetSubscriptions_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SubsService_ChangeSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChangeSubscriptionRequest)
+func _SubsService_GetSubscriptionById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubscriptionByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SubsServiceServer).ChangeSubscription(ctx, in)
+		return srv.(SubsServiceServer).GetSubscriptionById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SubsService_ChangeSubscription_FullMethodName,
+		FullMethod: SubsService_GetSubscriptionById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SubsServiceServer).ChangeSubscription(ctx, req.(*ChangeSubscriptionRequest))
+		return srv.(SubsServiceServer).GetSubscriptionById(ctx, req.(*GetSubscriptionByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubsService_ChangeApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeApplicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubsServiceServer).ChangeApplication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubsService_ChangeApplication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubsServiceServer).ChangeApplication(ctx, req.(*ChangeApplicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubsService_CreateApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateApplicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubsServiceServer).CreateApplication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubsService_CreateApplication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubsServiceServer).CreateApplication(ctx, req.(*CreateApplicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubsService_GetApplications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetApplicationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubsServiceServer).GetApplications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubsService_GetApplications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubsServiceServer).GetApplications(ctx, req.(*GetApplicationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubsService_GetSubscriptionAndApplicationByAccountId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubscriptionAndApplicationByAccountIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubsServiceServer).GetSubscriptionAndApplicationByAccountId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubsService_GetSubscriptionAndApplicationByAccountId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubsServiceServer).GetSubscriptionAndApplicationByAccountId(ctx, req.(*GetSubscriptionAndApplicationByAccountIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SubsService_GetUsersByTrainerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersByTrainerIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubsServiceServer).GetUsersByTrainerId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubsService_GetUsersByTrainerId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubsServiceServer).GetUsersByTrainerId(ctx, req.(*GetUsersByTrainerIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -211,8 +376,28 @@ var SubsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SubsService_GetSubscriptions_Handler,
 		},
 		{
-			MethodName: "ChangeSubscription",
-			Handler:    _SubsService_ChangeSubscription_Handler,
+			MethodName: "GetSubscriptionById",
+			Handler:    _SubsService_GetSubscriptionById_Handler,
+		},
+		{
+			MethodName: "ChangeApplication",
+			Handler:    _SubsService_ChangeApplication_Handler,
+		},
+		{
+			MethodName: "CreateApplication",
+			Handler:    _SubsService_CreateApplication_Handler,
+		},
+		{
+			MethodName: "GetApplications",
+			Handler:    _SubsService_GetApplications_Handler,
+		},
+		{
+			MethodName: "GetSubscriptionAndApplicationByAccountId",
+			Handler:    _SubsService_GetSubscriptionAndApplicationByAccountId_Handler,
+		},
+		{
+			MethodName: "GetUsersByTrainerId",
+			Handler:    _SubsService_GetUsersByTrainerId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

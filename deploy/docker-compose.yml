@@ -3,13 +3,36 @@ version: '3.9'
 services:
     api-gateway:
         container_name: api-gateway
-        image: plzdontt0uchme/crm-api-gateway
-        network_mode: host
+        image: "plzdontt0uchme/crm-api-gateway:latest"
+        ports:
+            - "3000:3000"
     auth-service:
         container_name: auth-service
-        image: plzdontt0uchme/crm-auth-service
-        network_mode: host
+        image: "plzdontt0uchme/crm-auth-service:latest"
+        ports:
+            - "3001:3001"
     users-service:
         container_name: users-service
-        image: plzdontt0uchme/crm-users-service
-        network_mode: host
+        image: "plzdontt0uchme/crm-users-service:latest"
+        ports:
+            - "3002:3002"
+    storage-service:
+        container_name: storage-service
+        image: "plzdontt0uchme/crm-storage-service:latest"
+        ports:
+            - "3003:3003"
+    subs-service:
+        container_name: subs-service
+        image: "plzdontt0uchme/crm-subs-service:latest"
+        ports:
+            - "3004:3004"
+    training-service:
+        container_name: training-service
+        image: "plzdontt0uchme/crm-training-service:latest"
+        ports:
+            - "3005:3005"
+    schedule-service:
+        container_name: schedule-service
+        image: "plzdontt0uchme/crm-schedule-service:latest"
+        ports:
+            - "3006:3006"

@@ -280,7 +280,7 @@ func UpdateAccessToken(request *authService.UpdateAccessTokenRequest, response *
 	response.Session = &authService.Session{
 		RefreshToken:              request.Session.RefreshToken,
 		AccessToken:               hash.GenerateRandomHash(),
-		DateExpirationAccessToken: timestamppb.New(time.Now().UTC().Add(time.Minute)),
+		DateExpirationAccessToken: timestamppb.New(time.Now().UTC().Add(time.Minute * 30)),
 	}
 
 	row := postgres.GetSessionByRefreshToken(response.Session)
@@ -366,7 +366,7 @@ func UpdateAccessToken(request *authService.UpdateAccessTokenRequest, response *
 		logger.CreateLog("error", fmt.Sprintf("error set key in redis: %v", err), "userId", account.Id)
 	}
 
-	err = redis.Set(context.Background(), fmt.Sprintf("exp:%v", response.Session.AccessToken), "", time.Minute).Err()
+	err = redis.Set(context.Background(), fmt.Sprintf("exp:%v", response.Session.AccessToken), "", time.Minute*30).Err()
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("error set key in redis: %v", err), "userId", account.Id)
 	}
@@ -553,9 +553,9 @@ func CreateSession(account *authService.Account) (*authService.Session, error) {
 	session := &authService.Session{
 		IdAccount:                  account.Id,
 		AccessToken:                hash.GenerateRandomHash(),
-		DateExpirationAccessToken:  timestamppb.New(time.Now().UTC().Add(time.Minute)),
+		DateExpirationAccessToken:  timestamppb.New(time.Now().UTC().Add(time.Minute * 30)),
 		RefreshToken:               hash.GenerateRandomHash(),
-		DateExpirationRefreshToken: timestamppb.New(time.Now().UTC().Add(time.Minute * 5)),
+		DateExpirationRefreshToken: timestamppb.New(time.Now().UTC().Add(time.Hour * 24 * 30)),
 	}
 
 	_, err := postgres.CreateSession(session)
@@ -579,7 +579,7 @@ func CreateSession(account *authService.Account) (*authService.Session, error) {
 		return nil, err
 	}
 
-	err = redis.Set(context.Background(), fmt.Sprintf("exp:%v", session.AccessToken), "", time.Minute).Err()
+	err = redis.Set(context.Background(), fmt.Sprintf("exp:%v", session.AccessToken), "", time.Minute*30).Err()
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("set key in redis: %v", err), "accountId", account.Id)
 		return nil, err

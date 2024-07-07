@@ -23,3 +23,7 @@ training_service:
     host: "localhost"
     port: 3005
     address: "localhost:3005"
+schedule_service:
+    host: "localhost"
+    port: 3006
+    address: "localhost:3006"

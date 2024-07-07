@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package scheduleService;
+option go_package = "/scheduleService";
+
+message Record {
+  int64 id = 1;
+  int64 clientId = 2;
+  int64 trainerId = 3;
+  google.protobuf.Timestamp dateStart = 4;
+  google.protobuf.Timestamp dateEnd = 5;
+}
+
+message Status {
+  bool successfully = 1;
+  string message = 2;
+  int64 httpStatus = 3;
+}
+
+message GetRecordsForUserRequest {
+  int64 userId = 1;
+}
+
+message GetRecordsForUserResponse {
+  repeated Record records = 1;
+  Status status = 2;
+}
+
+message GetRecordsRequest {}
+
+message GetRecordsResponse {
+  repeated Record records = 1;
+  Status status = 2;
+}
+
+message GetRecordsByTrainerForDayRequest {
+  int64 trainerId = 1;
+  google.protobuf.Timestamp day = 2;
+}
+
+message GetRecordsByTrainerForDayResponse {
+  repeated int64 time = 1;
+  Status status = 2;
+}
+
+message AddRecordRequest {
+  Record record = 1;
+}
+
+message AddRecordResponse {
+  Status status = 1;
+}
+
+message DeleteRecordByIdRequest {
+  int64 id = 1;
+}
+
+message DeleteRecordByIdResponse {
+  Status status = 1;
+}
+
+message DeleteRecordByClientIdRequest {
+  int64 clientId = 1;
+}
+
+message DeleteRecordByClientIdResponse {
+  Status status = 1;
+}
+
+service ScheduleService {
+  rpc GetRecordsForUser(GetRecordsForUserRequest) returns (GetRecordsForUserResponse);
+  rpc GetRecords(GetRecordsRequest) returns (GetRecordsResponse);
+  rpc GetRecordsByTrainerForDay(GetRecordsByTrainerForDayRequest) returns (GetRecordsByTrainerForDayResponse);
+  rpc AddRecord(AddRecordRequest) returns (AddRecordResponse);
+  rpc DeleteRecordById(DeleteRecordByIdRequest) returns (DeleteRecordByIdResponse);
+  rpc DeleteRecordByClientId(DeleteRecordByClientIdRequest) returns (DeleteRecordByClientIdResponse);
+}

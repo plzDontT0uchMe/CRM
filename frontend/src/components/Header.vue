@@ -107,12 +107,12 @@ const currentLanguage = ref('en')
 const router = useRouter()
 
 const toggleLanguage = () => {
-  currentLanguage.value = currentLanguage.value === 'en' ? 'ru' : 'en'
-  locale.value = currentLanguage.value
+    currentLanguage.value = currentLanguage.value === 'en' ? 'ru' : 'en'
+    locale.value = currentLanguage.value
 }
 
 const toggleProfileMenu = () => {
-  isProfileMenuVisible.value = !isProfileMenuVisible.value
+    isProfileMenuVisible.value = !isProfileMenuVisible.value
 }
 
 </script>

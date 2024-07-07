@@ -1,0 +1,16 @@
+env: "production"
+api_gateway:
+    host: "api-gateway"
+    port: 3000
+    address: "api-gateway:3000"
+schedule_service:
+    host: "0.0.0.0"
+    port: 3006
+    address: "0.0.0.0:3006"
+secret: "$ecr3t"
+db:
+    host: "172.17.0.1"
+    port: 5432
+    user: "postgres"
+    password: "0000"
+    dbname: "crm-scheduleService"

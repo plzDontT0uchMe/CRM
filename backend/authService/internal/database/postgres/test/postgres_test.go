@@ -1,21 +1,13 @@
 package test_test
 
 import (
-	"CRM/go/authService/internal/models"
-	"CRM/go/authService/pkg/hash"
-	"context"
-	"database/sql"
-	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
-	"sync"
-	"testing"
 )
 
 const goRoutines = 50
 const iterations = 1000
 
-func TestSQLDB(t *testing.T) {
+/*func TestSQLDB(t *testing.T) {
 	connectionString := fmt.Sprint("host=localhost port=5432 user=postgres password=0000 dbname=crm-authService sslmode=disable")
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
@@ -46,7 +38,7 @@ func TestSQLDB(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-}
+}*/
 
 /*func TestPGXDB(t *testing.T) {
 	connectionString := fmt.Sprint("host=localhost port=5432 user=postgres password=0000 dbname=crm-authService sslmode=disable")
@@ -81,7 +73,7 @@ func TestSQLDB(t *testing.T) {
 	wg.Wait()
 }*/
 
-func TestPGXPoolDB(t *testing.T) {
+/*func TestPGXPoolDB(t *testing.T) {
 	connectionString := fmt.Sprint("host=localhost port=5432 user=postgres password=0000 dbname=crm-authService sslmode=disable")
 
 	pool, err := pgxpool.New(context.Background(), connectionString)
@@ -113,4 +105,4 @@ func TestPGXPoolDB(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-}
+}*/

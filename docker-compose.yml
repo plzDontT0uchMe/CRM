@@ -19,3 +19,27 @@ services:
         image: "plzdontt0uchme/crm-users-service:latest"
         ports:
             - "3002:3002"
+    storage-service:
+        container_name: storage-service
+        build: /backend/storageService
+        image: "plzdontt0uchme/crm-storage-service:latest"
+        ports:
+            - "3003:3003"
+    subs-service:
+        container_name: subs-service
+        build: /backend/subsService
+        image: "plzdontt0uchme/crm-subs-service:latest"
+        ports:
+            - "3004:3004"
+    training-service:
+        container_name: training-service
+        build: /backend/trainingService
+        image: "plzdontt0uchme/crm-training-service:latest"
+        ports:
+            - "3005:3005"
+    schedule-service:
+        container_name: schedule-service
+        build: /backend/scheduleService
+        image: "plzdontt0uchme/crm-schedule-service:latest"
+        ports:
+            - "3006:3006"

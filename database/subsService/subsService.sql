@@ -81,6 +81,87 @@ ALTER SEQUENCE public.active_id_seq OWNED BY public.active.id;
 
 
 --
+-- Name: applications; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.applications (
+    id integer NOT NULL,
+    id_client integer NOT NULL,
+    id_subcription integer NOT NULL,
+    id_trainer integer,
+    duration integer
+);
+
+
+ALTER TABLE public.applications OWNER TO postgres;
+
+--
+-- Name: applications_id_client_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.applications_id_client_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.applications_id_client_seq OWNER TO postgres;
+
+--
+-- Name: applications_id_client_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.applications_id_client_seq OWNED BY public.applications.id_client;
+
+
+--
+-- Name: applications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.applications_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.applications_id_seq OWNER TO postgres;
+
+--
+-- Name: applications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.applications_id_seq OWNED BY public.applications.id;
+
+
+--
+-- Name: applications_id_subcription_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.applications_id_subcription_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.applications_id_subcription_seq OWNER TO postgres;
+
+--
+-- Name: applications_id_subcription_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.applications_id_subcription_seq OWNED BY public.applications.id_subcription;
+
+
+--
 -- Name: possibilities; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -159,6 +240,27 @@ ALTER TABLE ONLY public.active ALTER COLUMN id SET DEFAULT nextval('public.activ
 
 
 --
+-- Name: applications id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications ALTER COLUMN id SET DEFAULT nextval('public.applications_id_seq'::regclass);
+
+
+--
+-- Name: applications id_client; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications ALTER COLUMN id_client SET DEFAULT nextval('public.applications_id_client_seq'::regclass);
+
+
+--
+-- Name: applications id_subcription; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications ALTER COLUMN id_subcription SET DEFAULT nextval('public.applications_id_subcription_seq'::regclass);
+
+
+--
 -- Name: possibilities id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -177,12 +279,23 @@ ALTER TABLE ONLY public.subscription ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 COPY public.active (id, id_client, id_subscription, id_trainer, date_expires) FROM stdin;
-2	64	1	\N	\N
-1	63	2	\N	2024-06-09 20:43:55
+7	54	1	\N	\N
+4	61	2	\N	\N
 3	67	3	61	2024-06-09 20:43:52
-4	61	1	\N	\N
-6	65	1	\N	\N
-5	54	1	\N	\N
+1	63	3	61	2025-06-11 14:55:40.088055
+2	64	3	61	2024-12-13 17:07:02.949549
+8	0	1	\N	\N
+9	75	1	\N	\N
+10	76	1	\N	\N
+\.
+
+
+--
+-- Data for Name: applications; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.applications (id, id_client, id_subcription, id_trainer, duration) FROM stdin;
+41	64	1	\N	\N
 \.
 
 
@@ -218,14 +331,35 @@ COPY public.subscription (id, name, price, description) FROM stdin;
 -- Name: active_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.active_id_seq', 6, true);
+SELECT pg_catalog.setval('public.active_id_seq', 10, true);
+
+
+--
+-- Name: applications_id_client_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.applications_id_client_seq', 1, false);
+
+
+--
+-- Name: applications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.applications_id_seq', 41, true);
+
+
+--
+-- Name: applications_id_subcription_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.applications_id_subcription_seq', 1, false);
 
 
 --
 -- Name: possibilities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.possibilities_id_seq', 9, true);
+SELECT pg_catalog.setval('public.possibilities_id_seq', 10, true);
 
 
 --
@@ -244,6 +378,22 @@ ALTER TABLE ONLY public.active
 
 
 --
+-- Name: applications applications_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications
+    ADD CONSTRAINT applications_pk PRIMARY KEY (id);
+
+
+--
+-- Name: applications applications_pk_2; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications
+    ADD CONSTRAINT applications_pk_2 UNIQUE (id_client);
+
+
+--
 -- Name: possibilities possibilities_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -257,6 +407,30 @@ ALTER TABLE ONLY public.possibilities
 
 ALTER TABLE ONLY public.subscription
     ADD CONSTRAINT subs_pk PRIMARY KEY (id);
+
+
+--
+-- Name: active active_subscription_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.active
+    ADD CONSTRAINT active_subscription_id_fk FOREIGN KEY (id_subscription) REFERENCES public.subscription(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: applications applications_subscription_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.applications
+    ADD CONSTRAINT applications_subscription_id_fk FOREIGN KEY (id_subcription) REFERENCES public.subscription(id);
+
+
+--
+-- Name: possibilities possibilities_subscription_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.possibilities
+    ADD CONSTRAINT possibilities_subscription_id_fk FOREIGN KEY (id_subscription) REFERENCES public.subscription(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

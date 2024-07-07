@@ -41,3 +41,35 @@ func (s *Server) GetProgramsByUserId(ctx context.Context, request *trainingServi
 
 	return response, nil
 }
+
+func (s *Server) DeleteProgramLocal(ctx context.Context, request *trainingService.DeleteProgramLocalRequest) (*trainingService.DeleteProgramLocalResponse, error) {
+	response := &trainingService.DeleteProgramLocalResponse{}
+
+	service.DeleteProgramLocal(request, response)
+
+	return response, nil
+}
+
+func (s *Server) DeleteProgram(ctx context.Context, request *trainingService.DeleteProgramRequest) (*trainingService.DeleteProgramResponse, error) {
+	response := &trainingService.DeleteProgramResponse{}
+
+	service.DeleteProgram(request, response)
+
+	return response, nil
+}
+
+func (s *Server) ShareProgram(ctx context.Context, request *trainingService.ShareProgramRequest) (*trainingService.ShareProgramResponse, error) {
+	response := &trainingService.ShareProgramResponse{}
+
+	service.ShareProgram(request, response)
+
+	return response, nil
+}
+
+func (s *Server) ChangeProgram(ctx context.Context, request *trainingService.ChangeProgramRequest) (*trainingService.ChangeProgramResponse, error) {
+	response := &trainingService.ChangeProgramResponse{}
+
+	service.ChangeProgram(request, response)
+
+	return response, nil
+}

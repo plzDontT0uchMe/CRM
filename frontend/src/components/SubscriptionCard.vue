@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="button-container mt-4">
-            <button v-if="userStore.data.subscription.name != name" @click="changeSubscription" class="btn">{{ $t('buy') }}</button>
+            <button v-if="userStore.data.subscription.name != name" @click="sendApplication" class="btn">{{ $t('buy') }}</button>
             <button v-else class="btn" disabled>Активно</button>
         </div>
     </div>
@@ -61,17 +61,13 @@ const { t } = useI18n()
 
 const currentPrice = computed(() => props.price[props.selectedDuration])
 
-const changeSubscription = async () => {
+const sendApplication = async () => {
     try {
-        const data = new FormData()
-        data.append('idSubscription', props.id)
-        if (props.name != 'Free') {
-            data.append('dateExpiration', durationInt(props.duration))
-        }
-        if (props.name == 'Premium') {
-            data.append('idTrainer', props.selectedTrainer.id)
-        }
-        const resp = await axios.post('/api/changeSub', data)
+        const resp = await axios.post('/api/createApp', {
+            idSubscription: props?.id,
+            duration: durationInt(props?.duration) && props?.price != 0 || null,
+            idTrainer: props?.selectedTrainer?.id || null
+        })
         if (resp.data.successfully) {
             await userStore.fetchUser()
         }

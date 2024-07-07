@@ -14,6 +14,7 @@ type Config struct {
 	StorageService  Service `yaml:"storage_service"`
 	SubsService     Service `yaml:"subs_service"`
 	TrainingService Service `yaml:"training_service"`
+	ScheduleService Service `yaml:"schedule_service"`
 }
 
 type Service struct {

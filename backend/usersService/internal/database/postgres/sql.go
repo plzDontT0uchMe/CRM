@@ -1,26 +1,15 @@
 package postgres
 
 import (
-	"CRM/go/usersService/internal/logger"
-	"CRM/go/usersService/internal/models"
 	"CRM/go/usersService/internal/proto/usersService"
 	"CRM/go/usersService/pkg/utils"
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"net/http"
 )
 
-func CreateUser(user *models.User) (error, int) {
-	_, err := GetDB().Exec(context.Background(), "INSERT INTO users (id_account, gender) VALUES ($1, $2)", user.IdAccount, user.Gender)
-
-	if err != nil {
-		logger.CreateLog("error", fmt.Sprintf("database query error: %v", err), "UserIdAccount", user.IdAccount)
-		return err, http.StatusInternalServerError
-	}
-
-	return nil, http.StatusOK
+func Registration(user *usersService.User) (pgconn.CommandTag, error) {
+	return GetDB().Exec(context.Background(), "INSERT INTO users (id_account) VALUES ($1)", user.Id)
 }
 
 func GetUser(user *usersService.User) pgx.Row {

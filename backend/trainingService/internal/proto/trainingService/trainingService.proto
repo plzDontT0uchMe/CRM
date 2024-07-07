@@ -1,14 +1,15 @@
-syntax="proto3";
+syntax = "proto3";
 
 package trainingService;
 option go_package = "/trainingService";
 
 message Program {
   int64 id = 1;
-  int64 idCreator = 2;
-  string name = 3;
-  string description = 4;
-  repeated Exercise exercises = 5;
+  int64 idClient = 2;
+  int64 idCreator = 3;
+  string name = 4;
+  string description = 5;
+  repeated Exercise exercises = 6;
 }
 
 message Exercise {
@@ -45,7 +46,7 @@ message CreateProgramRequest {
   int64 id = 1;
   string name = 2;
   string description = 3;
-  repeated int64 ids = 4;
+  repeated Exercise exercises = 4;
 }
 
 message CreateProgramResponse {
@@ -61,9 +62,49 @@ message GetProgramsByUserIdResponse {
   Status status = 2;
 }
 
+message DeleteProgramLocalRequest {
+  int64 id = 1;
+  int64 idCreator = 2;
+}
+
+message DeleteProgramLocalResponse {
+  Status status = 1;
+}
+
+message DeleteProgramRequest {
+  int64 id = 1;
+  int64 idCreator = 2;
+}
+
+message DeleteProgramResponse {
+  Status status = 1;
+}
+
+message ShareProgramRequest {
+  int64 id = 1;
+  int64 idCreator = 2;
+  int64 idClient = 3;
+}
+
+message ShareProgramResponse {
+  Status status = 1;
+}
+
+message ChangeProgramRequest {
+  Program program = 1;
+}
+
+message ChangeProgramResponse {
+  Status status = 1;
+}
+
 service TrainingService {
   rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse);
   rpc GetExerciseById(GetExerciseByIdRequest) returns (GetExerciseByIdResponse);
   rpc CreateProgram(CreateProgramRequest) returns (CreateProgramResponse);
   rpc GetProgramsByUserId(GetProgramsByUserIdRequest) returns (GetProgramsByUserIdResponse);
+  rpc DeleteProgramLocal(DeleteProgramLocalRequest) returns (DeleteProgramLocalResponse);
+  rpc DeleteProgram(DeleteProgramRequest) returns (DeleteProgramResponse);
+  rpc ShareProgram(ShareProgramRequest) returns (ShareProgramResponse);
+  rpc ChangeProgram(ChangeProgramRequest) returns (ChangeProgramResponse);
 }

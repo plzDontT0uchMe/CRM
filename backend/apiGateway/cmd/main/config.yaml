@@ -1,25 +1,29 @@
 env: "production"
 api_gateway:
-    host: "193.169.105.90"
+    host: "0.0.0.0"
     port: 3000
-    address: "193.169.105.90:3000"
+    address: "0.0.0.0:3000"
 auth_service:
-    host: "193.169.105.90"
+    host: "auth-service"
     port: 3001
-    address: "193.169.105.90:3001"
+    address: "auth-service:3001"
 users_service:
-    host: "193.169.105.90"
+    host: "users-service"
     port: 3002
-    address: "193.169.105.90:3002"
+    address: "users-service:3002"
 storage_service:
-    host: "193.169.105.90"
+    host: "storage-service"
     port: 3003
-    address: "193.169.105.90:3003"
+    address: "storage-service:3003"
 subs_service:
-    host: "193.169.105.90"
+    host: "subs-service"
     port: 3004
-    address: "193.169.105.90:3004"
+    address: "subs-service:3004"
 training_service:
-    host: "193.169.105.90"
+    host: "training-service"
     port: 3005
-    address: "193.169.105.90:3005"
+    address: "training-service:3005"
+schedule_service:
+    host: "schedule-service"
+    port: 3006
+    address: "schedule-service:3006"

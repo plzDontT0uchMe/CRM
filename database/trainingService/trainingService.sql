@@ -261,12 +261,10 @@ ALTER TABLE ONLY public.programs_exercises ALTER COLUMN id SET DEFAULT nextval('
 --
 
 COPY public.active (id, id_program, id_user) FROM stdin;
-1	1	44
-3	3	54
-2	2	54
 4	4	54
 5	5	54
-6	6	54
+8	7	54
+10	8	61
 \.
 
 
@@ -339,12 +337,11 @@ COPY public.muscles (id, id_exercise, muscle) FROM stdin;
 --
 
 COPY public.programs (id, id_creator, name, description) FROM stdin;
-1	33	value2	value3
 2	54	123	321
-3	54	123	321
 4	54	test program	await getPrograms()
 5	54	test program v2	test program description v2
-6	54	eahresres	werahewarhwaerh
+7	54	123	321
+8	61	123	321
 \.
 
 
@@ -353,11 +350,8 @@ COPY public.programs (id, id_creator, name, description) FROM stdin;
 --
 
 COPY public.programs_exercises (id, id_program, id_exercise) FROM stdin;
-1	1	1
-2	1	2
-3	1	3
-6	3	1
-7	3	2
+1110	8	1
+1111	8	2
 4	2	1
 5	2	2
 9	4	4
@@ -365,8 +359,9 @@ COPY public.programs_exercises (id, id_program, id_exercise) FROM stdin;
 10	5	10
 11	5	1
 12	5	16
-13	6	6
-14	6	7
+15	7	1
+16	7	2
+17	7	3
 \.
 
 
@@ -374,7 +369,7 @@ COPY public.programs_exercises (id, id_program, id_exercise) FROM stdin;
 -- Name: active_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.active_id_seq', 6, true);
+SELECT pg_catalog.setval('public.active_id_seq', 10, true);
 
 
 --
@@ -395,14 +390,14 @@ SELECT pg_catalog.setval('public.muscles_id_seq', 21, true);
 -- Name: programs_exercises_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.programs_exercises_id_seq', 14, true);
+SELECT pg_catalog.setval('public.programs_exercises_id_seq', 1111, true);
 
 
 --
 -- Name: programs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.programs_id_seq', 6, true);
+SELECT pg_catalog.setval('public.programs_id_seq', 8, true);
 
 
 --
@@ -443,6 +438,38 @@ ALTER TABLE ONLY public.programs_exercises
 
 ALTER TABLE ONLY public.programs
     ADD CONSTRAINT programs_pk PRIMARY KEY (id);
+
+
+--
+-- Name: active active_programs_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.active
+    ADD CONSTRAINT active_programs_id_fk FOREIGN KEY (id_program) REFERENCES public.programs(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: muscles muscles_exercise_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.muscles
+    ADD CONSTRAINT muscles_exercise_id_fk FOREIGN KEY (id_exercise) REFERENCES public.exercise(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: programs_exercises programs_exercises_exercise_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.programs_exercises
+    ADD CONSTRAINT programs_exercises_exercise_id_fk FOREIGN KEY (id_exercise) REFERENCES public.exercise(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: programs_exercises programs_exercises_programs_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.programs_exercises
+    ADD CONSTRAINT programs_exercises_programs_id_fk FOREIGN KEY (id_program) REFERENCES public.programs(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

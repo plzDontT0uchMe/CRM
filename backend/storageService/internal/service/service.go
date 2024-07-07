@@ -13,14 +13,25 @@ import (
 	"path/filepath"
 )
 
-/*func RegisterAccount(registrationRequest *storageService.RegistrationRequest) (error, int) {
-	err, httpStatus := postgres.RegisterAccount(int(registrationRequest.IdAccount))
+func Registration(request *storageService.RegistrationRequest, response *storageService.RegistrationResponse) {
+	_, err := postgres.Registration(request.Id)
 	if err != nil {
-		return err, httpStatus
+		logger.CreateLog("error", fmt.Sprintf("register account: %v", err))
+		response.Status = &storageService.Status{
+			Successfully: false,
+			Message:      "error registering account",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
 	}
 
-	return nil, httpStatus
-}*/
+	logger.CreateLog("info", "register account successfully")
+	response.Status = &storageService.Status{
+		Successfully: true,
+		Message:      "registering account successfully",
+		HttpStatus:   http.StatusOK,
+	}
+}
 
 func UploadImage(request *storageService.UploadImageRequest, response *storageService.UploadImageResponse) {
 	var path sql.NullString

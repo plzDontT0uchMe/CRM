@@ -5,6 +5,14 @@ import "google/protobuf/timestamp.proto";
 package subsService;
 option go_package = "/subsService";
 
+message Application {
+  int64 id = 1;
+  int64 idClient = 2;
+  Subscription subscription = 3;
+  int64 idTrainer = 4;
+  int64 duration = 5;
+}
+
 message Subscription {
   int64 id = 1;
   string name = 2;
@@ -45,20 +53,66 @@ message GetSubscriptionsResponse {
   Status status = 2;
 }
 
-message ChangeSubscriptionRequest {
-  int64 idClient = 1;
-  int64 idSubscription = 2;
-  int64 idTrainer = 3;
-  google.protobuf.Timestamp dateExpiration = 4;
+message GetSubscriptionByIdRequest {
+  int64 id = 1;
 }
 
-message ChangeSubscriptionResponse {
+message GetSubscriptionByIdResponse {
+  Subscription subscription = 1;
+  Status status = 2;
+}
+
+message CreateApplicationRequest {
+  Application application = 1;
+}
+
+message CreateApplicationResponse {
   Status status = 1;
+}
+
+message GetApplicationsRequest {}
+
+message GetApplicationsResponse {
+  repeated Application applications = 1;
+  Status status = 2;
+}
+
+message GetSubscriptionAndApplicationByAccountIdRequest {
+  int64 id = 1;
+}
+
+message GetSubscriptionAndApplicationByAccountIdResponse {
+  Subscription subscription = 1;
+  Application application = 2;
+  Status status = 3;
+}
+
+message ChangeApplicationRequest {
+  int64 id = 1;
+  bool isAccepted = 2;
+}
+
+message ChangeApplicationResponse {
+  Status status = 1;
+}
+
+message GetUsersByTrainerIdRequest {
+  int64 id = 1;
+}
+
+message GetUsersByTrainerIdResponse {
+  repeated int64 id = 1;
+  Status status = 2;
 }
 
 service SubsService {
   rpc Registration(RegistrationRequest) returns (RegistrationResponse);
   rpc GetSubscriptionByAccountId(GetSubscriptionByAccountIdRequest) returns (GetSubscriptionByAccountIdResponse);
   rpc GetSubscriptions(GetSubscriptionsRequest) returns (GetSubscriptionsResponse);
-  rpc ChangeSubscription(ChangeSubscriptionRequest) returns (ChangeSubscriptionResponse);
+  rpc GetSubscriptionById(GetSubscriptionByIdRequest) returns (GetSubscriptionByIdResponse);
+  rpc ChangeApplication(ChangeApplicationRequest) returns (ChangeApplicationResponse);
+  rpc CreateApplication(CreateApplicationRequest) returns (CreateApplicationResponse);
+  rpc GetApplications(GetApplicationsRequest) returns (GetApplicationsResponse);
+  rpc GetSubscriptionAndApplicationByAccountId(GetSubscriptionAndApplicationByAccountIdRequest) returns (GetSubscriptionAndApplicationByAccountIdResponse);
+  rpc GetUsersByTrainerId(GetUsersByTrainerIdRequest) returns (GetUsersByTrainerIdResponse);
 }

@@ -17,7 +17,6 @@
     "devextreme": "23.2.6",
     "devextreme-dist": "^23.2.6",
     "devextreme-vue": "23.2.6",
-    "fullcalendar": "^6.1.14",
     "moment": "^2.30.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",

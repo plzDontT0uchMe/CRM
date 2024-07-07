@@ -90,7 +90,7 @@ func GetExerciseById(request *trainingService.GetExerciseByIdRequest, response *
 }
 
 func CreateProgram(request *trainingService.CreateProgramRequest, response *trainingService.CreateProgramResponse) {
-	_, err := postgres.CreateProgram(request.Id, request.Name, request.Description, request.Ids)
+	_, err := postgres.CreateProgram(request.Id, request.Name, request.Description, request.Exercises)
 	if err != nil {
 		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
 		response.Status = &trainingService.Status{
@@ -169,6 +169,108 @@ func GetProgramsByUserId(request *trainingService.GetProgramsByUserIdRequest, re
 	response.Status = &trainingService.Status{
 		Successfully: true,
 		Message:      "programs successfully received",
+		HttpStatus:   http.StatusOK,
+	}
+}
+
+func DeleteProgramLocal(request *trainingService.DeleteProgramLocalRequest, response *trainingService.DeleteProgramLocalResponse) {
+	_, err := postgres.DeleteProgramLocal(request.Id, request.IdCreator)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error deleting program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	logger.CreateLog("info", "program successfully deleted")
+	response.Status = &trainingService.Status{
+		Successfully: true,
+		Message:      "program successfully deleted",
+		HttpStatus:   http.StatusOK,
+	}
+}
+
+func DeleteProgram(request *trainingService.DeleteProgramRequest, response *trainingService.DeleteProgramResponse) {
+	_, err := postgres.DeleteProgram(request.Id, request.IdCreator)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error deleting program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	logger.CreateLog("info", "program successfully deleted")
+	response.Status = &trainingService.Status{
+		Successfully: true,
+		Message:      "program successfully deleted",
+		HttpStatus:   http.StatusOK,
+	}
+}
+
+func ShareProgram(request *trainingService.ShareProgramRequest, response *trainingService.ShareProgramResponse) {
+	_, err := postgres.ShareProgram(request.Id, request.IdClient)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error sharing program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	logger.CreateLog("info", "program successfully shared")
+	response.Status = &trainingService.Status{
+		Successfully: true,
+		Message:      "program successfully shared",
+		HttpStatus:   http.StatusOK,
+	}
+}
+
+func ChangeProgram(request *trainingService.ChangeProgramRequest, response *trainingService.ChangeProgramResponse) {
+	_, err := postgres.DeleteProgramByProgramId(request.Program.Id)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error changing program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	_, err = postgres.UpdateProgram(request.Program.Id, request.Program.Name, request.Program.Description)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error changing program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	_, err = postgres.UpdateProgramExercises(request.Program.Id, request.Program.Exercises)
+	if err != nil {
+		logger.CreateLog("error", fmt.Sprintf("database error: %v", err))
+		response.Status = &trainingService.Status{
+			Successfully: false,
+			Message:      "error changing program",
+			HttpStatus:   http.StatusInternalServerError,
+		}
+		return
+	}
+
+	logger.CreateLog("info", "program successfully changed")
+	response.Status = &trainingService.Status{
+		Successfully: true,
+		Message:      "program successfully changed",
 		HttpStatus:   http.StatusOK,
 	}
 }
